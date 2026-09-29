@@ -89,7 +89,7 @@
                             <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
                                 <i class="fa-regular fa-envelope text-xs"></i>
                             </div>
-                            <input type="email" id="emailInput" name="email" value="{{ old('email', 'admin@digitalmartbd.com') }}" required 
+                            <input type="email" id="emailInput" name="email" value="{{ old('email') }}" placeholder="admin@digitalmartbd.com" required autocomplete="email"
                                    class="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-800/70 border border-slate-700 text-xs text-white placeholder-slate-500 focus:border-brand-purple focus:ring-2 focus:ring-purple-500/20 outline-none transition font-mono">
                         </div>
                     </div>
@@ -102,7 +102,7 @@
                             <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
                                 <i class="fa-solid fa-lock text-xs"></i>
                             </div>
-                            <input type="password" id="passwordInput" name="password" required value="admin123" placeholder="••••••••"
+                            <input type="password" id="passwordInput" name="password" required placeholder="••••••••" autocomplete="current-password"
                                    class="w-full pl-10 pr-10 py-3 rounded-2xl bg-slate-800/70 border border-slate-700 text-xs text-white placeholder-slate-500 focus:border-brand-purple focus:ring-2 focus:ring-purple-500/20 outline-none transition font-mono">
                             <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-white transition">
                                 <i id="eyeIcon" class="fa-regular fa-eye text-xs"></i>
@@ -112,12 +112,9 @@
 
                     <div class="flex items-center justify-between text-xs text-slate-400 pt-1 font-bn">
                         <label class="flex items-center gap-2 cursor-pointer hover:text-slate-300 transition">
-                            <input type="checkbox" name="remember" checked class="accent-purple-600 rounded">
+                            <input type="checkbox" name="remember" class="accent-purple-600 rounded">
                             <span>লগইন মনে রাখুন</span>
                         </label>
-                        <button type="button" onclick="fillCredentials()" class="text-purple-400 hover:text-purple-300 font-semibold text-[11px] underline">
-                            ডিফল্ট ক্রেডেনশিয়াল
-                        </button>
                     </div>
 
                     <button type="submit" 
@@ -156,11 +153,6 @@
                 eyeIcon.classList.remove('fa-eye-slash');
                 eyeIcon.classList.add('fa-eye');
             }
-        }
-
-        function fillCredentials() {
-            document.getElementById('emailInput').value = 'admin@digitalmartbd.com';
-            document.getElementById('passwordInput').value = 'admin123';
         }
     </script>
 </body>
