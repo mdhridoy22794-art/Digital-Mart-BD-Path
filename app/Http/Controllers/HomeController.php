@@ -70,6 +70,7 @@ class HomeController extends Controller
     {
         $validated = $request->validate([
             'product_slug' => 'nullable|string',
+            'quantity' => 'nullable|integer|min:1|max:100',
             'customer_name' => 'required|string|max:100',
             'customer_phone' => 'required|string|max:20',
             'payment_method' => 'required|in:bkash,nagad',
@@ -89,8 +90,26 @@ class HomeController extends Controller
             ], 422);
         }
 
+        $quantity = (int) ($validated['quantity'] ?? 1);
+        if ($quantity < 1) {
+            $quantity = 1;
+        }
+
+        // Check current available unsold stock
+        $availableStock = DigitalLink::where('product_id', $product->id)
+            ->where('status', 'available')
+            ->count();
+
+        if ($availableStock < $quantity) {
+            return response()->json([
+                'success' => false,
+                'message' => "দুঃখিত! আপনি {$quantity}টি লিংক অর্ডার করতে চেয়েছেন, কিন্তু স্টকে বর্তমানে {$availableStock}টি লিংক অবশিষ্ট রয়েছে।",
+            ], 422);
+        }
+
         // Check if TrxID was already used
-        $existingOrder = Order::where('trx_id', strtoupper(trim($validated['trx_id'])))->first();
+        $cleanTrxId = strtoupper(trim($validated['trx_id']));
+        $existingOrder = Order::where('trx_id', $cleanTrxId)->first();
         if ($existingOrder) {
             return response()->json([
                 'success' => false,
@@ -104,58 +123,81 @@ class HomeController extends Controller
             $screenshotPath = $request->file('screenshot')->store('screenshots', 'public');
         }
 
+        $totalAmount = $product->offer_price * $quantity;
+
         try {
-            $order = DB::transaction(function () use ($validated, $product, $screenshotPath) {
-                // 1. Pick and lock the first available single-use link
-                $link = DigitalLink::where('product_id', $product->id)
+            $result = DB::transaction(function () use ($validated, $product, $quantity, $totalAmount, $cleanTrxId, $screenshotPath) {
+                // 1. Pick and lock the links in strict serial FIFO order (id ASC)
+                $links = DigitalLink::where('product_id', $product->id)
                     ->where('status', 'available')
                     ->orderBy('id', 'asc')
                     ->lockForUpdate()
-                    ->first();
+                    ->take($quantity)
+                    ->get();
 
-                if (!$link) {
-                    throw new \Exception('দুঃখিত! আমাদের আজকের স্টক শেষ হয়ে গেছে। অনুগ্রহ করে একটু পরে চেষ্টা করুন বা হোয়াটসঅ্যাপে যোগাযোগ করুন।');
+                if ($links->count() < $quantity) {
+                    throw new \Exception('দুঃখিত! পর্যাপ্ত লিংক স্টকে নেই। অনুগ্রহ করে একটু পর চেষ্টা করুন।');
                 }
 
                 // 2. Generate unique order number
                 $orderNumber = 'DM-' . strtoupper(Str::random(6));
 
-                // 3. Create the order record
+                // 3. Newline separated links
+                $deliveredLinksText = $links->pluck('link_url')->implode("\n");
+                $firstLinkId = $links->first()->id;
+
+                // 4. Create the order record
                 $order = Order::create([
                     'order_number' => $orderNumber,
                     'product_id' => $product->id,
                     'customer_name' => $validated['customer_name'],
                     'customer_phone' => $validated['customer_phone'],
-                    'amount' => $product->offer_price,
+                    'quantity' => $quantity,
+                    'amount' => $totalAmount,
                     'payment_method' => $validated['payment_method'],
                     'sender_phone' => $validated['sender_phone'],
-                    'trx_id' => strtoupper(trim($validated['trx_id'])),
+                    'trx_id' => $cleanTrxId,
                     'screenshot_path' => $screenshotPath,
                     'status' => 'completed',
-                    'digital_link_id' => $link->id,
-                    'delivered_link' => $link->link_url,
+                    'digital_link_id' => $firstLinkId,
+                    'delivered_link' => $deliveredLinksText,
                 ]);
 
-                // 4. Mark link as SOLD
-                $link->update([
-                    'status' => 'sold',
-                    'order_id' => $order->id,
-                    'delivered_to_phone' => $validated['customer_phone'],
-                    'delivered_at' => now(),
-                ]);
+                // 5. Mark each link as SOLD in serial order
+                foreach ($links as $link) {
+                    $link->update([
+                        'status' => 'sold',
+                        'order_id' => $order->id,
+                        'delivered_to_phone' => $validated['customer_phone'],
+                        'delivered_at' => now(),
+                    ]);
+                }
 
-                return $order;
+                return ['order' => $order, 'links' => $links];
             });
+
+            $orderRecord = $result['order'];
+            $orderedLinks = $result['links'];
+
+            $linksPayload = $orderedLinks->values()->map(function ($item, $index) {
+                return [
+                    'serial' => $index + 1,
+                    'id' => $item->id,
+                    'url' => $item->link_url,
+                ];
+            })->toArray();
 
             return response()->json([
                 'success' => true,
-                'order_number' => $order->order_number,
-                'delivered_link' => $order->delivered_link,
-                'amount' => $order->amount,
-                'customer_name' => $order->customer_name,
-                'customer_phone' => $order->customer_phone,
+                'order_number' => $orderRecord->order_number,
+                'quantity' => $orderRecord->quantity,
+                'delivered_link' => $orderRecord->delivered_link,
+                'delivered_links' => $linksPayload,
+                'amount' => $orderRecord->amount,
+                'customer_name' => $orderRecord->customer_name,
+                'customer_phone' => $orderRecord->customer_phone,
                 'product_name' => $product->name,
-                'message' => 'পেমেন্ট সফলভাবে সম্পন্ন হয়েছে! আপনার কাঙ্ক্ষিত সাবস্ক্রিপশন লিংকটি নিচে প্রদর্শিত হলো।',
+                'message' => 'পেমেন্ট সফলভাবে সম্পন্ন হয়েছে! আপনার কাঙ্ক্ষিত সাবস্ক্রিপশন লিংকগুলো নিচে ক্রমানুসারে প্রদর্শিত হলো।',
             ]);
 
         } catch (\Exception $e) {

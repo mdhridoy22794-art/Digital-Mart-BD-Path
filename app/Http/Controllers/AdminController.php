@@ -59,23 +59,30 @@ class AdminController extends Controller
     public function links(Request $request)
     {
         $filter = $request->query('status', 'all');
+        $productId = $request->query('product_id');
         $query = DigitalLink::latest();
 
         if ($filter !== 'all') {
             $query->where('status', $filter);
         }
 
-        $links = $query->paginate(25);
+        if ($productId) {
+            $query->where('product_id', $productId);
+        }
+
+        $links = $query->paginate(30);
         $availableCount = DigitalLink::where('status', 'available')->count();
         $soldCount = DigitalLink::where('status', 'sold')->count();
+        $products = Product::all();
 
-        return view('admin.links', compact('links', 'filter', 'availableCount', 'soldCount'));
+        return view('admin.links', compact('links', 'filter', 'productId', 'availableCount', 'soldCount', 'products'));
     }
 
     public function storeLinks(Request $request)
     {
         $request->validate([
             'bulk_links' => 'required|string',
+            'product_id' => 'nullable|exists:products,id',
         ]);
 
         $rawText = $request->input('bulk_links');
@@ -83,8 +90,11 @@ class AdminController extends Controller
         $addedCount = 0;
         $duplicateCount = 0;
 
-        $product = Product::where('slug', 'gemini-pro-18m')->first();
-        $productId = $product ? $product->id : 1;
+        $productId = $request->input('product_id');
+        if (!$productId) {
+            $product = Product::where('slug', 'gemini-pro-18m')->first() ?? Product::first();
+            $productId = $product ? $product->id : 1;
+        }
 
         foreach ($lines as $line) {
             $cleanLink = trim($line);
@@ -118,9 +128,37 @@ class AdminController extends Controller
     public function deleteLink($id)
     {
         $link = DigitalLink::findOrFail($id);
+        Order::where('digital_link_id', $link->id)->update(['digital_link_id' => null]);
         $link->delete();
 
         return redirect()->route('admin.links')->with('success', 'লিংকটি সফলভাবে মুছে ফেলা হয়েছে।');
+    }
+
+    public function clearUnsoldLinks(Request $request)
+    {
+        $productId = $request->input('product_id');
+        $query = DigitalLink::where('status', 'available');
+        if ($productId) {
+            $query->where('product_id', $productId);
+        }
+
+        $count = $query->count();
+        $query->delete();
+
+        return redirect()->route('admin.links')->with('success', "স্টক থেকে সফলভাবে {$count}টি অবিক্রীত লিংক মুছে ফেলা হয়েছে।");
+    }
+
+    public function bulkDeleteLinks(Request $request)
+    {
+        $ids = $request->input('selected_links', []);
+        if (empty($ids) || !is_array($ids)) {
+            return redirect()->route('admin.links')->with('error', 'কোনো লিংক নির্বাচন করা হয়নি!');
+        }
+
+        Order::whereIn('digital_link_id', $ids)->update(['digital_link_id' => null]);
+        $count = DigitalLink::whereIn('id', $ids)->delete();
+
+        return redirect()->route('admin.links')->with('success', "নির্বাচিত {$count}টি লিংক সফলভাবে মুছে ফেলা হয়েছে।");
     }
 
     public function orders(Request $request)

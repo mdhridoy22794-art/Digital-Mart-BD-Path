@@ -14,6 +14,7 @@ class Order extends Model
         'product_id',
         'customer_name',
         'customer_phone',
+        'quantity',
         'amount',
         'payment_method',
         'sender_phone',
@@ -27,6 +28,7 @@ class Order extends Model
 
     protected $casts = [
         'amount' => 'decimal:2',
+        'quantity' => 'integer',
     ];
 
     public function product()
@@ -37,5 +39,10 @@ class Order extends Model
     public function digitalLink()
     {
         return $this->belongsTo(DigitalLink::class);
+    }
+
+    public function digitalLinks()
+    {
+        return $this->hasMany(DigitalLink::class)->orderBy('id', 'asc');
     }
 }

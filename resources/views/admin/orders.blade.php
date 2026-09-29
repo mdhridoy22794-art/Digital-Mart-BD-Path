@@ -141,24 +141,45 @@
                             </div>
                         </td>
 
-                        <!-- Amount -->
+                        <!-- Amount & Quantity -->
                         <td class="py-4 px-6">
                             <span class="font-mono font-extrabold text-slate-900 text-sm">
                                 ৳{{ number_format($order->amount, 0) }}
                             </span>
-                            <span class="block text-[10px] text-emerald-600 font-semibold font-bn">ক্যাশ ইন ভেরিফাইড</span>
+                            <span class="block text-[10px] text-purple-700 font-bold font-bn">
+                                পরিমাণ: {{ $order->quantity ?? 1 }}টি লিংক
+                            </span>
                         </td>
 
                         <!-- Delivered Link -->
                         <td class="py-4 px-6 max-w-xs">
-                            @if($order->delivered_link)
+                            @php
+                                $deliveredList = array_values(array_filter(preg_split('/\r\n|\r|\n/', (string) $order->delivered_link)));
+                            @endphp
+                            @if(count($deliveredList) > 1)
+                            <div class="space-y-1.5">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="px-2 py-0.5 rounded-full bg-purple-100 text-brand-700 text-[10px] font-bold font-mono">
+                                        {{ count($deliveredList) }}টি ডেলিভারিকৃত লিংক
+                                    </span>
+                                    <button onclick="copyText('{{ implode('\n', $deliveredList) }}', this)" 
+                                            class="px-2 py-0.5 rounded bg-purple-50 text-brand-600 hover:bg-brand-600 hover:text-white border border-purple-200 text-[10px] font-bold font-mono transition shrink-0"
+                                            title="সব লিংক একসাথে কপি">
+                                        Copy All
+                                    </button>
+                                </div>
+                                <div class="text-[10px] text-slate-500 font-mono truncate max-w-[150px]" title="{{ $deliveredList[0] }}">
+                                    1. {{ $deliveredList[0] }}
+                                </div>
+                            </div>
+                            @elseif(count($deliveredList) === 1)
                             <div class="flex items-center gap-2">
-                                <a href="{{ $order->delivered_link }}" target="_blank" 
+                                <a href="{{ $deliveredList[0] }}" target="_blank" 
                                    class="font-mono text-[11px] text-brand-600 hover:underline truncate max-w-[140px] block" 
-                                   title="{{ $order->delivered_link }}">
-                                    {{ $order->delivered_link }}
+                                   title="{{ $deliveredList[0] }}">
+                                    {{ $deliveredList[0] }}
                                 </a>
-                                <button onclick="copyText('{{ $order->delivered_link }}', this)" 
+                                <button onclick="copyText('{{ $deliveredList[0] }}', this)" 
                                         class="px-2 py-0.5 rounded bg-purple-50 text-brand-600 hover:bg-brand-600 hover:text-white border border-purple-200 text-[10px] font-bold font-mono transition shrink-0">
                                     Copy
                                 </button>
