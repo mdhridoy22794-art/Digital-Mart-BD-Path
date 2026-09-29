@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="max-w-6xl mx-auto px-4 py-8 space-y-10">
+<div class="max-w-6xl mx-auto px-2.5 sm:px-4 py-3 sm:py-8 space-y-4 sm:space-y-10">
 
     <!-- Breadcrumb -->
     <div class="flex items-center gap-2 text-xs text-slate-500">
@@ -13,7 +13,7 @@
     </div>
 
     <!-- Main Product Showcase Grid -->
-    <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8 md:p-10">
+    <div class="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-sm p-4 sm:p-8 md:p-10">
         <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
             
             <!-- Left Col: Product Visual Image Card -->

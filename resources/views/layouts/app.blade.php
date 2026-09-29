@@ -156,85 +156,98 @@
 </head>
 <body class="min-h-screen flex flex-col antialiased bg-slate-50 text-slate-800">
 
-    <!-- Top Announcement Bar -->
+    <!-- Sleek Top Announcement Bar -->
     @if(!empty($settings['announcement_text']))
-    <div class="gradient-brand text-white py-1.5 px-4 text-center text-xs font-semibold tracking-wide flex items-center justify-center gap-2 shadow-sm">
-        <i class="fa-solid fa-fire text-yellow-300 animate-pulse"></i>
-        <span>{{ $settings['announcement_text'] }}</span>
+    <div id="topAnnouncementBar" class="gradient-brand text-white py-1 px-3 sm:px-4 text-center text-[10px] sm:text-xs font-medium tracking-wide flex items-center justify-center gap-1.5 shadow-sm relative transition-all">
+        <i class="fa-solid fa-fire text-yellow-300 text-xs shrink-0 animate-pulse"></i>
+        <span class="truncate max-w-[80vw] sm:max-w-none">{{ $settings['announcement_text'] }}</span>
+        <button type="button" onclick="document.getElementById('topAnnouncementBar').style.display='none'" class="absolute right-2 text-white/70 hover:text-white text-xs px-1" title="Close">
+            <i class="fa-solid fa-xmark text-[10px]"></i>
+        </button>
     </div>
     @endif
 
     <!-- Main Store Header -->
     <header class="bg-white border-b border-slate-200/90 sticky top-0 z-40 shadow-sm">
-        <!-- Upper Row: Brand, Search, Contacts & Cart -->
-        <div class="max-w-7xl mx-auto px-4 py-3.5 flex flex-wrap items-center justify-between gap-3">
-            
-            <!-- Brand Logo -->
-            <a href="{{ route('home') }}" class="flex items-center gap-3 shrink-0 group">
-                <img src="{{ asset('images/logo.jpg') }}" alt="Digital Mart BD Logo" class="w-11 h-11 rounded-xl shadow-md border border-purple-200 object-cover group-hover:scale-105 transition-transform duration-300">
-                <div class="flex flex-col">
-                    <span class="text-xl md:text-2xl font-black font-en gradient-text tracking-tight leading-none">Digital Mart BD</span>
-                    <span class="text-[10px] text-slate-500 font-semibold tracking-wider uppercase mt-0.5">ডিজিটাল সলিউশন ও স্টোর</span>
-                </div>
-            </a>
+        <div class="max-w-7xl mx-auto px-3 sm:px-4 py-2 sm:py-3.5">
+            <!-- Row 1: Logo (Left) & Actions + Hamburger (Right) -->
+            <div class="flex items-center justify-between gap-2">
+                <!-- Brand Logo & Name -->
+                <a href="{{ route('home') }}" class="flex items-center gap-2 sm:gap-3 shrink-0 group">
+                    <img src="{{ asset('images/logo.jpg') }}" alt="Digital Mart BD Logo" class="w-9 h-9 sm:w-11 sm:h-11 rounded-xl shadow-md border border-purple-200 object-cover group-hover:scale-105 transition-transform duration-300">
+                    <div class="flex flex-col">
+                        <span class="text-lg sm:text-2xl font-black font-en gradient-text tracking-tight leading-none">Digital Mart BD</span>
+                        <span class="text-[9px] sm:text-[10px] text-slate-500 font-semibold tracking-wider uppercase mt-0.5">ডিজিটাল সলিউশন ও স্টোর</span>
+                    </div>
+                </a>
 
-            <!-- Central Product Search Bar -->
-            <div class="flex-grow max-w-xl mx-auto order-3 sm:order-2 w-full sm:w-auto">
+                <!-- Desktop Search Bar (Hidden on Mobile) -->
+                <div class="hidden md:block flex-grow max-w-lg mx-6">
+                    <form action="{{ route('home') }}" method="GET" class="relative flex items-center">
+                        <input type="text" name="search" value="{{ request('search') }}" 
+                               placeholder="Search for products... (যেমন: Gemini Pro, Canva, Tools)" 
+                               class="w-full pl-4 pr-12 py-2 rounded-full border border-purple-200/80 bg-slate-50/60 text-xs focus:bg-white focus:border-brand-purple focus:ring-2 focus:ring-purple-100 outline-none transition duration-200">
+                        <button type="submit" class="absolute right-1 w-7 h-7 rounded-full gradient-brand text-white flex items-center justify-center hover:opacity-90 transition shadow-sm">
+                            <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Right Side Actions -->
+                <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
+                    <!-- WhatsApp Support Button (Mobile & Desktop) -->
+                    @if(!empty($settings['whatsapp_number']))
+                    <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $settings['whatsapp_number']) }}" target="_blank" 
+                       class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 transition text-emerald-800" title="WhatsApp Chat Support">
+                        <span class="relative flex h-2 w-2">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                        </span>
+                        <i class="fa-brands fa-whatsapp text-emerald-600 text-sm"></i>
+                        <span class="hidden lg:inline text-[11px] font-bold font-en text-slate-900">{{ $settings['whatsapp_number'] }}</span>
+                    </a>
+                    @endif
+
+                    <!-- Track Order Button (Desktop) -->
+                    <a href="{{ route('order.track') }}" class="hidden sm:flex w-8 h-8 sm:w-9 sm:h-9 rounded-xl border border-slate-200 hover:border-purple-300 hover:bg-purple-50 items-center justify-center text-slate-700 hover:text-brand-purple transition" title="অর্ডার ট্র্যাক করুন">
+                        <i class="fa-solid fa-truck-fast text-xs sm:text-sm"></i>
+                    </a>
+
+                    <!-- Cart Badge Button -->
+                    <a href="{{ route('product.details', 'gemini-pro-18m') }}" class="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl gradient-brand text-white shadow-sm shadow-purple-500/20 btn-shine transition transform hover:scale-105" title="কার্ট / অর্ডার">
+                        <i class="fa-solid fa-cart-shopping text-xs"></i>
+                        <span class="text-xs font-bold font-en">৳200</span>
+                    </a>
+
+                    <!-- Mobile Drawer Menu Toggle Button (হাতের ডান দিকে) -->
+                    <button type="button" onclick="toggleMobileDrawer(true)" 
+                            class="md:hidden w-8 h-8 rounded-xl border border-purple-200 bg-purple-50 text-brand-purple hover:bg-brand-purple hover:text-white flex items-center justify-center transition shadow-sm ml-0.5" 
+                            aria-label="মেনু ওপেন করুন" title="মেনু">
+                        <i class="fa-solid fa-bars-staggered text-sm"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Row 2 (Mobile Only): Compact Search Bar -->
+            <div class="md:hidden mt-2">
                 <form action="{{ route('home') }}" method="GET" class="relative flex items-center">
                     <input type="text" name="search" value="{{ request('search') }}" 
-                           placeholder="Search for products... (যেমন: Gemini Pro, Canva, Tools)" 
-                           class="w-full pl-4 pr-12 py-2.5 rounded-full border border-purple-200/80 bg-slate-50/60 text-xs md:text-sm focus:bg-white focus:border-brand-purple focus:ring-2 focus:ring-purple-100 outline-none transition duration-200">
-                    <button type="submit" class="absolute right-1.5 w-8 h-8 rounded-full gradient-brand text-white flex items-center justify-center hover:opacity-90 transition shadow-sm">
-                        <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                           placeholder="Search products... (Gemini, Canva, Tools)" 
+                           class="w-full pl-3.5 pr-10 py-1.5 rounded-full border border-purple-200/90 bg-slate-50 text-xs focus:bg-white focus:border-brand-purple focus:ring-2 focus:ring-purple-100 outline-none transition">
+                    <button type="submit" class="absolute right-1 w-6 h-6 rounded-full gradient-brand text-white flex items-center justify-center hover:opacity-90 transition">
+                        <i class="fa-solid fa-magnifying-glass text-[10px]"></i>
                     </button>
                 </form>
             </div>
-
-            <!-- Top Right Support & Action Icons -->
-            <div class="flex items-center gap-3.5 order-2 sm:order-3 ml-auto sm:ml-0">
-                <!-- WhatsApp Support Pill -->
-                @if(!empty($settings['whatsapp_number']))
-                <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $settings['whatsapp_number']) }}" target="_blank" 
-                   class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 transition text-emerald-800">
-                    <span class="relative flex h-2.5 w-2.5">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-                    </span>
-                    <i class="fa-brands fa-whatsapp text-emerald-600 text-base"></i>
-                    <div class="hidden md:flex flex-col text-left">
-                        <span class="text-[9px] text-emerald-700 font-bold uppercase leading-none">Chat Support</span>
-                        <span class="text-[11px] font-bold font-en text-slate-900 leading-tight">{{ $settings['whatsapp_number'] }}</span>
-                    </div>
-                </a>
-                @endif
-
-                <!-- Track Order Button -->
-                <a href="{{ route('order.track') }}" class="w-9 h-9 rounded-xl border border-slate-200 hover:border-purple-300 hover:bg-purple-50 flex items-center justify-center text-slate-700 hover:text-brand-purple transition" title="অর্ডার ট্র্যাক করুন">
-                    <i class="fa-solid fa-truck-fast text-sm"></i>
-                </a>
-
-                <!-- Wishlist Icon -->
-                <button class="w-9 h-9 rounded-xl border border-slate-200 hover:border-pink-300 hover:bg-pink-50 flex items-center justify-center text-slate-700 hover:text-pink-600 transition" title="উইশলিস্ট">
-                    <i class="fa-regular fa-heart text-sm"></i>
-                </button>
-
-                <!-- Cart Badge Button -->
-                <a href="{{ route('product.details', 'gemini-pro-18m') }}" class="flex items-center gap-2 px-3 py-1.5 rounded-xl gradient-brand text-white shadow-md shadow-purple-500/20 btn-shine transition transform hover:scale-105">
-                    <i class="fa-solid fa-cart-shopping text-xs"></i>
-                    <span class="text-xs font-bold font-en">৳200</span>
-                </a>
-            </div>
-
         </div>
 
-        <!-- Lower Navigation Row: Categories & Nav Links -->
-        <div class="border-t border-slate-100 bg-white">
-            <div class="max-w-7xl mx-auto px-4 flex items-center justify-between text-xs font-semibold overflow-x-auto no-scrollbar">
-                
+        <!-- Desktop Navigation Bar (Hidden on Mobile) -->
+        <div class="hidden md:block border-t border-slate-100 bg-white">
+            <div class="max-w-7xl mx-auto px-4 flex items-center justify-between text-xs font-semibold">
                 <div class="flex items-center gap-1 sm:gap-2 py-2">
                     <!-- All Categories Dropdown Trigger -->
                     <div class="relative group">
-                        <button class="px-4 py-2 rounded-lg gradient-brand text-white flex items-center gap-2 font-bold shadow-sm hover:opacity-95 transition">
+                        <button class="px-3.5 py-1.5 rounded-lg gradient-brand text-white flex items-center gap-2 font-bold shadow-sm hover:opacity-95 transition">
                             <i class="fa-solid fa-bars"></i>
                             <span>All Categories</span>
                             <i class="fa-solid fa-chevron-down text-[10px]"></i>
@@ -247,19 +260,19 @@
                                     <i class="fa-solid fa-wand-magic-sparkles text-purple-600 text-xs"></i>
                                     <span>AI Tools (Gemini Pro)</span>
                                 </a>
-                                <a href="#products-section" class="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-purple-50 hover:text-brand-purple transition">
+                                <a href="{{ route('home') }}#trending-section" class="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-purple-50 hover:text-brand-purple transition">
                                     <i class="fa-solid fa-laptop-code text-blue-600 text-xs"></i>
                                     <span>Software & Utilities</span>
                                 </a>
-                                <a href="#products-section" class="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-purple-50 hover:text-brand-purple transition">
+                                <a href="{{ route('product.details', 'canva-pro-1-year') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-purple-50 hover:text-brand-purple transition">
                                     <i class="fa-solid fa-palette text-pink-600 text-xs"></i>
                                     <span>Canva & Graphic Design</span>
                                 </a>
-                                <a href="#products-section" class="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-purple-50 hover:text-brand-purple transition">
+                                <a href="{{ route('home') }}#recent-section" class="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-purple-50 hover:text-brand-purple transition">
                                     <i class="fa-solid fa-layer-group text-emerald-600 text-xs"></i>
                                     <span>Templates & Bundles</span>
                                 </a>
-                                <a href="#products-section" class="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-purple-50 hover:text-brand-purple transition">
+                                <a href="{{ route('home') }}#recent-section" class="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-purple-50 hover:text-brand-purple transition">
                                     <i class="fa-solid fa-thumbs-up text-indigo-600 text-xs"></i>
                                     <span>Likes & Social Media</span>
                                 </a>
@@ -271,21 +284,21 @@
                     <a href="{{ route('home') }}" class="px-3 py-1.5 rounded-lg {{ request()->routeIs('home') ? 'bg-purple-100 text-brand-purple font-bold' : 'text-slate-600 hover:text-brand-purple hover:bg-slate-50' }} transition">
                         Home
                     </a>
-                    <a href="#products-section" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-brand-purple hover:bg-slate-50 transition">
+                    <a href="{{ route('home') }}#trending-section" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-brand-purple hover:bg-slate-50 transition">
                         Shop
                     </a>
                     <a href="{{ route('product.details', 'gemini-pro-18m') }}" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-brand-purple hover:bg-slate-50 transition flex items-center gap-1">
                         <span>Gemini AI Pro</span>
                         <span class="w-1.5 h-1.5 rounded-full bg-pink-500 animate-ping"></span>
                     </a>
-                    <a href="#products-section" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-brand-purple hover:bg-slate-50 transition">
+                    <a href="{{ route('home') }}#trending-section" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-brand-purple hover:bg-slate-50 transition">
                         Software
                     </a>
-                    <a href="#products-section" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-brand-purple hover:bg-slate-50 transition">
+                    <a href="{{ route('home') }}#recent-section" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-brand-purple hover:bg-slate-50 transition">
                         Templates
                     </a>
                     <a href="#footer-section" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-brand-purple hover:bg-slate-50 transition">
-                        Our Contacts
+                        Contact Us
                     </a>
                 </div>
 
@@ -293,7 +306,6 @@
                     <i class="fa-solid fa-bolt text-yellow-500"></i>
                     <span>ইনস্ট্যান্ট ১-সেকেন্ড স্বয়ংক্রিয় লিংক ডেলিভারি</span>
                 </div>
-
             </div>
         </div>
     </header>
@@ -395,12 +407,144 @@
     </footer>
 
     <!-- Floating WhatsApp Bubble -->
+    <!-- Floating WhatsApp Bubble -->
     @if(!empty($settings['whatsapp_number']))
     <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $settings['whatsapp_number']) }}" target="_blank"
-       class="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white flex items-center justify-center shadow-xl shadow-emerald-500/40 transform hover:scale-110 transition duration-300">
-        <i class="fa-brands fa-whatsapp text-3xl"></i>
+       class="fixed bottom-6 right-6 z-40 w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white flex items-center justify-center shadow-xl shadow-emerald-500/40 transform hover:scale-110 transition duration-300">
+        <i class="fa-brands fa-whatsapp text-2xl sm:text-3xl"></i>
     </a>
     @endif
+
+    <!-- Mobile Off-Canvas Drawer (Left Slide-in) -->
+    <div id="mobileDrawerOverlay" onclick="toggleMobileDrawer(false)" 
+         class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 opacity-0 pointer-events-none transition-opacity duration-300"></div>
+
+    <div id="mobileDrawer" 
+         class="fixed top-0 bottom-0 left-0 w-[82vw] max-w-xs bg-white z-50 shadow-2xl flex flex-col transform -translate-x-full transition-transform duration-300 ease-in-out border-r border-slate-200">
+        
+        <!-- Drawer Header -->
+        <div class="p-4 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-purple-50 to-pink-50">
+            <a href="{{ route('home') }}" onclick="toggleMobileDrawer(false)" class="flex items-center gap-2.5">
+                <img src="{{ asset('images/logo.jpg') }}" alt="Logo" class="w-8 h-8 rounded-xl shadow-md border border-purple-200 object-cover">
+                <div>
+                    <span class="text-sm font-black font-en gradient-text leading-tight block">Digital Mart BD</span>
+                    <span class="text-[8px] text-slate-500 font-semibold tracking-wider uppercase">ডিজিটাল স্টোর</span>
+                </div>
+            </a>
+            <button type="button" onclick="toggleMobileDrawer(false)" 
+                    class="w-7 h-7 rounded-full bg-white hover:bg-rose-50 text-slate-500 hover:text-rose-600 flex items-center justify-center transition border border-slate-200 shadow-sm" 
+                    aria-label="Close Menu">
+                <i class="fa-solid fa-xmark text-xs"></i>
+            </button>
+        </div>
+
+        <!-- Drawer Body Navigation Links -->
+        <div class="flex-grow overflow-y-auto p-3 space-y-1 text-xs font-semibold text-slate-700">
+            <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider px-2 pt-1 pb-1">মেনু ও ক্যাটালগ</div>
+            
+            <a href="{{ route('home') }}" onclick="toggleMobileDrawer(false)" 
+               class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-purple-50 hover:text-brand-purple transition {{ request()->routeIs('home') ? 'bg-purple-50 text-brand-purple font-bold' : '' }}">
+                <i class="fa-solid fa-house text-purple-600 w-4 text-center"></i>
+                <span>হোম (Home)</span>
+            </a>
+
+            <a href="{{ route('product.details', 'gemini-pro-18m') }}" onclick="toggleMobileDrawer(false)" 
+               class="flex items-center justify-between px-3 py-2 rounded-xl bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-300/40 text-brand-purple font-bold transition">
+                <div class="flex items-center gap-2.5">
+                    <i class="fa-solid fa-wand-magic-sparkles text-pink-600 w-4 text-center"></i>
+                    <span>জেমিনাই প্রো ১৮ মাস</span>
+                </div>
+                <span class="bg-gradient-to-r from-purple-600 to-pink-500 text-white text-[8px] font-black px-1.5 py-0.5 rounded uppercase">HOT</span>
+            </a>
+
+            <a href="{{ route('home') }}#trending-section" onclick="toggleMobileDrawer(false)" 
+               class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-purple-50 hover:text-brand-purple transition">
+                <i class="fa-solid fa-fire text-amber-500 w-4 text-center"></i>
+                <span>ট্রেন্ডিং প্রোডাক্টসমূহ</span>
+            </a>
+
+            <a href="{{ route('product.details', 'canva-pro-1-year') }}" onclick="toggleMobileDrawer(false)" 
+               class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-purple-50 hover:text-brand-purple transition">
+                <i class="fa-solid fa-palette text-indigo-600 w-4 text-center"></i>
+                <span>ক্যানভা প্রো (১ বছর)</span>
+            </a>
+
+            <a href="{{ route('home') }}#recent-section" onclick="toggleMobileDrawer(false)" 
+               class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-purple-50 hover:text-brand-purple transition">
+                <i class="fa-solid fa-box-open text-blue-600 w-4 text-center"></i>
+                <span>সকল সফটওয়্যার ও বান্ডেল</span>
+            </a>
+
+            <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider px-2 pt-3 pb-1">কাস্টমার সার্ভিস</div>
+
+            <a href="{{ route('order.track') }}" onclick="toggleMobileDrawer(false)" 
+               class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-purple-50 hover:text-brand-purple transition">
+                <i class="fa-solid fa-truck-fast text-emerald-600 w-4 text-center"></i>
+                <span>অর্ডার ট্র্যাক করুন (Track Order)</span>
+            </a>
+
+            @if(!empty($settings['whatsapp_number']))
+            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $settings['whatsapp_number']) }}" target="_blank" onclick="toggleMobileDrawer(false)" 
+               class="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-emerald-50 text-emerald-800 hover:bg-emerald-100 transition font-bold">
+                <i class="fa-brands fa-whatsapp text-emerald-600 text-sm w-4 text-center"></i>
+                <span>হোয়াটসঅ্যাপ হেল্পলাইন</span>
+            </a>
+            @endif
+
+            @if(!empty($settings['facebook_url']))
+            <a href="{{ $settings['facebook_url'] }}" target="_blank" onclick="toggleMobileDrawer(false)" 
+               class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-blue-50 text-blue-700 transition">
+                <i class="fa-brands fa-facebook text-blue-600 w-4 text-center"></i>
+                <span>ফেসবুক পেজ</span>
+            </a>
+            @endif
+
+            <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider px-2 pt-3 pb-1">সিকিউর অ্যাক্সেস</div>
+
+            <a href="{{ route('admin.login') }}" onclick="toggleMobileDrawer(false)" 
+               class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 text-slate-600 transition">
+                <i class="fa-solid fa-shield-halved text-purple-600 w-4 text-center"></i>
+                <span>অ্যাডমিন কন্ট্রোল প্যানেল</span>
+            </a>
+        </div>
+
+        <!-- Drawer Footer -->
+        <div class="p-3 border-t border-slate-100 bg-slate-50 text-center text-[11px] text-slate-500">
+            <div class="flex items-center justify-center gap-1 text-emerald-700 font-bold mb-0.5">
+                <i class="fa-solid fa-bolt text-yellow-500 text-[10px]"></i>
+                <span>১-সেকেন্ড ইনস্ট্যান্ট ডেলিভারি</span>
+            </div>
+            <p class="text-[10px]">বিকাশ ও নগদ পেমেন্ট গ্রহণযোগ্য</p>
+        </div>
+
+    </div>
+
+    <script>
+        function toggleMobileDrawer(open) {
+            const drawer = document.getElementById('mobileDrawer');
+            const overlay = document.getElementById('mobileDrawerOverlay');
+            if (!drawer || !overlay) return;
+
+            if (open) {
+                overlay.classList.remove('opacity-0', 'pointer-events-none');
+                overlay.classList.add('opacity-100', 'pointer-events-auto');
+                drawer.classList.remove('-translate-x-full');
+                drawer.classList.add('translate-x-0');
+                document.body.style.overflow = 'hidden';
+            } else {
+                overlay.classList.remove('opacity-100', 'pointer-events-auto');
+                overlay.classList.add('opacity-0', 'pointer-events-none');
+                drawer.classList.remove('translate-x-0');
+                drawer.classList.add('-translate-x-full');
+                document.body.style.overflow = '';
+            }
+        }
+
+        // Close drawer on ESC key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') toggleMobileDrawer(false);
+        });
+    </script>
 
     @yield('scripts')
 </body>
