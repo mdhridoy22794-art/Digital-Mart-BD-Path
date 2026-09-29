@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
             ['email' => 'admin@digitalmartbd.com'],
             [
                 'name' => 'Digital Mart BD Admin',
-                'password' => Hash::make('admin123'),
+                'password' => Hash::make('Admin#Mart2026'),
             ]
         );
 

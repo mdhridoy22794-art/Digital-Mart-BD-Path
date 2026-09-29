@@ -78,7 +78,7 @@
                 </div>
                 @endif
 
-                <form action="{{ route('admin.login.submit') }}" method="POST" class="space-y-4">
+                <form action="{{ secure_url('/admin/login') }}" method="POST" class="space-y-4">
                     @csrf
 
                     <div>
