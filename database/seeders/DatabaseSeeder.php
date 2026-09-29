@@ -181,9 +181,10 @@ class DatabaseSeeder extends Seeder
             Product::updateOrCreate(['slug' => $pData['slug']], $pData);
         }
 
-        // 4. Ensure demo available links exist for Gemini Pro
+        // 4. Ensure demo available links exist only on initial fresh setup
         $gemini = Product::where('slug', 'gemini-pro-18m')->first();
-        if ($gemini && DigitalLink::where('product_id', $gemini->id)->where('status', 'available')->count() == 0) {
+        $hasSeededLinks = Setting::where('key', 'initial_sample_links_seeded')->exists();
+        if ($gemini && !$hasSeededLinks && DigitalLink::where('product_id', $gemini->id)->count() == 0) {
             $sampleLinks = [
                 'https://serviceactivation.google.com/subscription/new/ACQpIIhV73g7sq4r60Ojy53xwiiZCB80-GEMINI-FRESH1-Yk9Hv1KRkAch9VRn4Z6t2zOKZiaFXW8dWdY5E5co41KOOoAkdwvnVjAXrxTP8HlsiP7ugAgO6Eh7fe',
                 'https://serviceactivation.google.com/subscription/new/ACQpIIhV73g7sq4r60Ojy53xwiiZCB80-GEMINI-FRESH2-Yk9Hv1KRkAch9VRn4Z6t2zOKZiaFXW8dWdY5E5co41KOOoAkdwvnVjAXrxTP8HlsiP7ugAgO6Eh7fe',
@@ -197,6 +198,7 @@ class DatabaseSeeder extends Seeder
                     ['product_id' => $gemini->id, 'status' => 'available']
                 );
             }
+            Setting::create(['key' => 'initial_sample_links_seeded', 'value' => '1']);
         }
     }
 }
