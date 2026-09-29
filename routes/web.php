@@ -21,6 +21,15 @@ Route::post('/admin/logout', [AdminController::class, 'logout'])->name('admin.lo
 // --- Admin Protected Routes ---
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
+    // --- Products Management Routes ---
+    Route::get('/products', [AdminController::class, 'products'])->name('products.index');
+    Route::get('/products/create', [AdminController::class, 'createProduct'])->name('products.create');
+    Route::post('/products', [AdminController::class, 'storeProduct'])->name('products.store');
+    Route::get('/products/{id}/edit', [AdminController::class, 'editProduct'])->name('products.edit');
+    Route::post('/products/{id}', [AdminController::class, 'updateProduct'])->name('products.update');
+    Route::delete('/products/{id}', [AdminController::class, 'destroyProduct'])->name('products.destroy');
+    Route::post('/products/{id}/toggle', [AdminController::class, 'toggleProductStock'])->name('products.toggle');
+
     Route::get('/gemini', [AdminController::class, 'gemini'])->name('gemini');
     Route::post('/gemini', [AdminController::class, 'updateGemini'])->name('gemini.update');
     Route::get('/links', [AdminController::class, 'links'])->name('links');

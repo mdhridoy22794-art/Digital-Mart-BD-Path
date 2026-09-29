@@ -171,6 +171,189 @@ class AdminController extends Controller
         return redirect()->route('admin.settings')->with('success', 'সকল সেটিংস সফলভাবে আপডেট ও সংরক্ষিত হয়েছে!');
     }
 
+    // ================= PRODUCT CRUD MANAGEMENT =================
+
+    public function products()
+    {
+        $products = Product::withCount(['availableLinks', 'soldLinks'])->latest()->get();
+        return view('admin.products.index', compact('products'));
+    }
+
+    public function createProduct()
+    {
+        return view('admin.products.create');
+    }
+
+    public function storeProduct(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'slug' => 'nullable|string|max:255|unique:products,slug',
+            'subtitle' => 'nullable|string|max:255',
+            'regular_price' => 'required|numeric|min:0',
+            'offer_price' => 'required|numeric|min:0',
+            'badge' => 'nullable|string|max:50',
+            'is_active' => 'nullable|boolean',
+            'description' => 'nullable|string',
+            'features' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+            'bulk_links' => 'nullable|string',
+        ]);
+
+        $featuresArray = [];
+        if ($request->filled('features')) {
+            $rawLines = preg_split('/\r\n|\r|\n/', $request->input('features'));
+            foreach ($rawLines as $line) {
+                $trimmed = trim($line);
+                if (!empty($trimmed)) $featuresArray[] = $trimmed;
+            }
+        }
+
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imageFile = $request->file('image');
+            $imageName = 'prod_' . time() . '_' . Str::random(5) . '.' . $imageFile->getClientOriginalExtension();
+            $imageFile->move(public_path('images/products'), $imageName);
+            $imagePath = 'images/products/' . $imageName;
+        }
+
+        $slug = $request->filled('slug') ? Str::slug($request->input('slug')) : Str::slug($request->input('name'));
+        if (Product::where('slug', $slug)->exists()) {
+            $slug .= '-' . Str::random(4);
+        }
+
+        $product = Product::create([
+            'slug' => $slug,
+            'name' => $request->input('name'),
+            'subtitle' => $request->input('subtitle'),
+            'regular_price' => $request->input('regular_price'),
+            'offer_price' => $request->input('offer_price'),
+            'badge' => $request->input('badge') ?? 'NEW',
+            'is_active' => $request->has('is_active') ? (bool)$request->input('is_active') : true,
+            'description' => $request->input('description'),
+            'features' => $featuresArray,
+            'image_path' => $imagePath,
+        ]);
+
+        if ($request->filled('bulk_links')) {
+            $lines = preg_split('/\r\n|\r|\n/', $request->input('bulk_links'));
+            foreach ($lines as $line) {
+                $clean = trim($line);
+                if (!empty($clean)) {
+                    DigitalLink::create([
+                        'product_id' => $product->id,
+                        'link_url' => $clean,
+                        'status' => 'available',
+                    ]);
+                }
+            }
+        }
+
+        return redirect()->route('admin.products.index')->with('success', 'নতুন প্রোডাক্ট সফলভাবে তৈরি ও স্টোরে যুক্ত করা হয়েছে!');
+    }
+
+    public function editProduct($id)
+    {
+        $product = Product::findOrFail($id);
+        $availableLinks = $product->availableLinks()->count();
+        $soldLinks = $product->soldLinks()->count();
+
+        return view('admin.products.edit', compact('product', 'availableLinks', 'soldLinks'));
+    }
+
+    public function updateProduct(Request $request, $id)
+    {
+        $product = Product::findOrFail($id);
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'subtitle' => 'nullable|string|max:255',
+            'regular_price' => 'required|numeric|min:0',
+            'offer_price' => 'required|numeric|min:0',
+            'badge' => 'nullable|string|max:50',
+            'is_active' => 'nullable|boolean',
+            'description' => 'nullable|string',
+            'features' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+            'bulk_links' => 'nullable|string',
+        ]);
+
+        $featuresArray = [];
+        if ($request->filled('features')) {
+            $rawLines = preg_split('/\r\n|\r|\n/', $request->input('features'));
+            foreach ($rawLines as $line) {
+                $trimmed = trim($line);
+                if (!empty($trimmed)) $featuresArray[] = $trimmed;
+            }
+        }
+
+        if ($request->hasFile('image')) {
+            $imageFile = $request->file('image');
+            $imageName = 'prod_' . time() . '_' . Str::random(5) . '.' . $imageFile->getClientOriginalExtension();
+            $imageFile->move(public_path('images/products'), $imageName);
+            $product->image_path = 'images/products/' . $imageName;
+        }
+
+        $product->name = $request->input('name');
+        $product->subtitle = $request->input('subtitle');
+        $product->regular_price = $request->input('regular_price');
+        $product->offer_price = $request->input('offer_price');
+        $product->badge = $request->input('badge') ?? 'OFFER';
+        $product->is_active = $request->has('is_active') ? (bool)$request->input('is_active') : false;
+        $product->description = $request->input('description');
+        if (!empty($featuresArray)) {
+            $product->features = $featuresArray;
+        }
+        $product->save();
+
+        $linksAdded = 0;
+        if ($request->filled('bulk_links')) {
+            $lines = preg_split('/\r\n|\r|\n/', $request->input('bulk_links'));
+            foreach ($lines as $line) {
+                $clean = trim($line);
+                if (!empty($clean)) {
+                    $exists = DigitalLink::where('link_url', $clean)->exists();
+                    if (!$exists) {
+                        DigitalLink::create([
+                            'product_id' => $product->id,
+                            'link_url' => $clean,
+                            'status' => 'available',
+                        ]);
+                        $linksAdded++;
+                    }
+                }
+            }
+        }
+
+        $msg = "প্রোডাক্ট '{$product->name}' সফলভাবে আপডেট করা হয়েছে!";
+        if ($linksAdded > 0) {
+            $msg .= " এবং {$linksAdded}টি নতুন লিংক স্টকে যুক্ত হয়েছে।";
+        }
+
+        return redirect()->route('admin.products.index')->with('success', $msg);
+    }
+
+    public function destroyProduct($id)
+    {
+        $product = Product::findOrFail($id);
+        $name = $product->name;
+        // Delete associated digital links
+        $product->links()->delete();
+        $product->delete();
+
+        return redirect()->route('admin.products.index')->with('success', "প্রোডাক্ট '{$name}' এবং এর সমস্ত লিংক সফলভাবে মুছে ফেলা হয়েছে।");
+    }
+
+    public function toggleProductStock($id)
+    {
+        $product = Product::findOrFail($id);
+        $product->is_active = !$product->is_active;
+        $product->save();
+
+        $statusText = $product->is_active ? 'ইন স্টক (In Stock)' : 'স্টক শেষ (Out of Stock)';
+        return back()->with('success', "প্রোডাক্ট '{$product->name}' এর অবস্থা '{$statusText}' করা হয়েছে।");
+    }
+
     public function gemini()
     {
         $product = Product::where('slug', 'gemini-pro-18m')->firstOrFail();

@@ -156,6 +156,19 @@
                     </span>
                 </a>
 
+                <a href="{{ route('admin.products.index') }}" 
+                   class="group flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-xs transition-all duration-200 {{ request()->routeIs('admin.products.*') ? 'bg-gradient-to-r from-brand-600 to-purple-600 text-white font-bold shadow-lg shadow-purple-600/30 ring-1 ring-white/10' : 'text-slate-400 hover:text-white hover:bg-slate-800/70' }}">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors {{ request()->routeIs('admin.products.*') ? 'bg-white/20 text-white' : 'bg-slate-800/80 text-blue-400 group-hover:bg-brand-600 group-hover:text-white' }}">
+                            <i class="fa-solid fa-boxes-stacked text-xs"></i>
+                        </div>
+                        <span class="font-bn text-sm">সকল প্রোডাক্ট ম্যানেজ</span>
+                    </div>
+                    <span class="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold {{ request()->routeIs('admin.products.*') ? 'bg-white/20 text-white' : 'bg-slate-800 text-slate-400' }}">
+                        Catalog
+                    </span>
+                </a>
+
                 <a href="{{ route('admin.links') }}" 
                    class="group flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-xs transition-all duration-200 {{ request()->routeIs('admin.links') ? 'bg-gradient-to-r from-brand-600 to-purple-600 text-white font-bold shadow-lg shadow-purple-600/30 ring-1 ring-white/10' : 'text-slate-400 hover:text-white hover:bg-slate-800/70' }}">
                     <div class="flex items-center gap-3">
