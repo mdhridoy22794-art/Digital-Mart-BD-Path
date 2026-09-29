@@ -1,0 +1,33 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\AdminController;
+
+// --- Frontend Public Routes ---
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/product/{slug}', [HomeController::class, 'productDetails'])->name('product.details');
+Route::post('/order/process', [HomeController::class, 'processOrder'])->name('order.process');
+Route::get('/track', [HomeController::class, 'trackOrder'])->name('order.track');
+
+// --- Admin Authentication Routes ---
+Route::get('/admin/login', [AdminController::class, 'showLogin'])->name('admin.login');
+Route::get('/login', function () {
+    return redirect()->route('admin.login');
+})->name('login');
+Route::post('/admin/login', [AdminController::class, 'login'])->name('admin.login.submit');
+Route::post('/admin/logout', [AdminController::class, 'logout'])->name('admin.logout');
+
+// --- Admin Protected Routes ---
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::get('/gemini', [AdminController::class, 'gemini'])->name('gemini');
+    Route::post('/gemini', [AdminController::class, 'updateGemini'])->name('gemini.update');
+    Route::get('/links', [AdminController::class, 'links'])->name('links');
+    Route::post('/links', [AdminController::class, 'storeLinks'])->name('links.store');
+    Route::delete('/links/{id}', [AdminController::class, 'deleteLink'])->name('links.delete');
+    Route::get('/orders', [AdminController::class, 'orders'])->name('orders');
+    Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
+    Route::post('/settings', [AdminController::class, 'updateSettings'])->name('settings.update');
+    Route::post('/password', [AdminController::class, 'updatePassword'])->name('password.update');
+});

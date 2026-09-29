@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: digital-mart-bd
+    runtime: docker
+    plan: free
+    region: singapore
+    envVars:
+      - key: APP_NAME
+        value: "Digital Mart BD"
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_KEY
+        value: base64:fwDn21eRguVyadRJ+ub0BVHHmjyk8TpbZxcVTmAoqYQ=
+      - key: DB_CONNECTION
+        value: sqlite
+      - key: SESSION_DRIVER
+        value: database

@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient -->
+    <radialGradient id="bgGradOffice" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#0E2A47"/>
+      <stop offset="50%" stop-color="#071728"/>
+      <stop offset="100%" stop-color="#020912"/>
+    </radialGradient>
+
+    <!-- Neon Glows -->
+    <filter id="glowBlue" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="15" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Gradients -->
+    <linearGradient id="officeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0078D4"/>
+      <stop offset="50%" stop-color="#00A4EF"/>
+      <stop offset="100%" stop-color="#50E6FF"/>
+    </linearGradient>
+
+    <linearGradient id="pedestalGradBlue" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0C3B68"/>
+      <stop offset="100%" stop-color="#04182E"/>
+    </linearGradient>
+
+    <linearGradient id="badgeGradBlue" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0078D4"/>
+      <stop offset="100%" stop-color="#00B4D8"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="600" height="600" fill="url(#bgGradOffice)"/>
+
+  <!-- Cyber Grid Lines -->
+  <g stroke="rgba(0, 164, 239, 0.15)" stroke-width="1.5">
+    <line x1="0" y1="480" x2="600" y2="480"/>
+    <line x1="0" y1="520" x2="600" y2="520"/>
+    <line x1="0" y1="560" x2="600" y2="560"/>
+    <line x1="100" y1="480" x2="40" y2="600"/>
+    <line x1="200" y1="480" x2="160" y2="600"/>
+    <line x1="300" y1="480" x2="300" y2="600"/>
+    <line x1="400" y1="480" x2="440" y2="600"/>
+    <line x1="500" y1="480" x2="560" y2="600"/>
+  </g>
+
+  <!-- Ambient Light Orbs -->
+  <circle cx="200" cy="180" r="140" fill="#0078D4" opacity="0.2" filter="blur(60px)"/>
+  <circle cx="400" cy="220" r="140" fill="#00A4EF" opacity="0.2" filter="blur(60px)"/>
+
+  <!-- 3D Pedestal Base -->
+  <ellipse cx="300" cy="460" rx="200" ry="40" fill="#030E1A"/>
+  <path d="M120 450 L150 490 L450 490 L480 450 Z" fill="url(#pedestalGradBlue)" stroke="#0078D4" stroke-width="2"/>
+  <ellipse cx="300" cy="450" rx="180" ry="25" fill="#0A2D4F" stroke="#50E6FF" stroke-width="2"/>
+
+  <!-- Floating 5TB Badge -->
+  <g transform="translate(60, 140)">
+    <rect width="110" height="42" rx="12" fill="rgba(4, 24, 46, 0.85)" stroke="#50E6FF" stroke-width="1.5"/>
+    <text x="55" y="26" fill="#50E6FF" font-family="'Inter', sans-serif" font-weight="900" font-size="14" text-anchor="middle">5TB CLOUD</text>
+  </g>
+
+  <!-- 5 Devices Badge -->
+  <g transform="translate(430, 140)">
+    <rect width="110" height="42" rx="12" fill="rgba(4, 24, 46, 0.85)" stroke="#00A4EF" stroke-width="1.5"/>
+    <text x="55" y="26" fill="#50E6FF" font-family="'Inter', sans-serif" font-weight="900" font-size="13" text-anchor="middle">5 DEVICES</text>
+  </g>
+
+  <!-- Central 3D Microsoft Office Icon Box -->
+  <g transform="translate(205, 130)" filter="url(#glowBlue)">
+    <rect width="190" height="190" rx="42" fill="#041E38" stroke="url(#officeGrad)" stroke-width="5"/>
+    
+    <!-- Microsoft 4 Squares Logo in 3D -->
+    <g transform="translate(45, 45)">
+      <rect x="0" y="0" width="45" height="45" rx="8" fill="#F25022"/>
+      <rect x="55" y="0" width="45" height="45" rx="8" fill="#7FBA00"/>
+      <rect x="0" y="55" width="45" height="45" rx="8" fill="#00A4EF"/>
+      <rect x="55" y="55" width="45" height="45" rx="8" fill="#FFB900"/>
+    </g>
+  </g>
+
+  <!-- Typography: Product Name & Title -->
+  <text x="300" y="380" fill="#FFFFFF" font-family="'Inter', sans-serif" font-weight="900" font-size="38" text-anchor="middle" letter-spacing="2">
+    OFFICE 365
+  </text>
+  <text x="300" y="415" fill="#50E6FF" font-family="'Inter', sans-serif" font-weight="800" font-size="17" text-anchor="middle" letter-spacing="4">
+    + 5TB ONEDRIVE CLOUD
+  </text>
+
+  <!-- Subtitle Tag -->
+  <g transform="translate(150, 520)">
+    <rect width="300" height="42" rx="21" fill="url(#badgeGradBlue)"/>
+    <text x="150" y="27" fill="#FFFFFF" font-family="'Inter', sans-serif" font-weight="800" font-size="13" text-anchor="middle" letter-spacing="1">
+      WORD • EXCEL • PPT • 5TB STORAGE
+    </text>
+  </g>
+</svg>
