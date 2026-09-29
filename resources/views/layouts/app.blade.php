@@ -321,15 +321,15 @@
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 pb-12 border-b border-slate-800">
                 <!-- Col 1: Brand Info -->
-                <div class="space-y-4">
-                    <div class="flex items-center gap-3">
+                <div class="space-y-4 flex flex-col items-center md:items-start text-center md:text-left">
+                    <div class="flex items-center justify-center md:justify-start gap-3">
                         <img src="{{ asset('images/logo.jpg') }}" alt="Logo" class="w-10 h-10 rounded-xl border border-purple-500/30">
                         <span class="text-white text-xl font-bold font-en tracking-tight">Digital Mart BD</span>
                     </div>
-                    <p class="text-slate-400 leading-relaxed text-[11px]">
+                    <p class="text-slate-400 leading-relaxed text-[11px] max-w-sm">
                         Digital Mart BD হলো আসল ও নির্ভরযোগ্য প্রিমিয়াম সফটওয়্যার, এআই টুলস, এবং ডিজিটাল সাবস্ক্রিপশনের ওয়ান-স্টপ মার্কেটপ্লেস। আমরা শতভাগ গ্যারান্টি সহকারে অটোমেটিক ইনস্ট্যান্ট অ্যাক্সেস প্রদান করি।
                     </p>
-                    <div class="space-y-2 text-[11px]">
+                    <div class="space-y-2 text-[11px] flex flex-col items-center md:items-start">
                         <p class="flex items-center gap-2">
                             <i class="fa-solid fa-phone text-purple-400"></i>
                             <span class="text-white font-en">{{ $settings['whatsapp_number'] ?? '+880 1934-779775' }}</span>
@@ -342,9 +342,9 @@
                 </div>
 
                 <!-- Col 2: Customer Service -->
-                <div>
+                <div class="flex flex-col items-center md:items-start text-center md:text-left">
                     <h4 class="text-white font-bold text-sm mb-4 uppercase tracking-wider font-en">Customer Service</h4>
-                    <ul class="space-y-2.5 text-[11px]">
+                    <ul class="space-y-2.5 text-[11px] flex flex-col items-center md:items-start">
                         <li><a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $settings['whatsapp_number'] ?? '8801934779775') }}" target="_blank" class="hover:text-purple-400 transition flex items-center gap-1.5"><i class="fa-solid fa-chevron-right text-[9px] text-purple-500"></i> Contact Us</a></li>
                         <li><a href="{{ route('order.track') }}" class="hover:text-purple-400 transition flex items-center gap-1.5"><i class="fa-solid fa-chevron-right text-[9px] text-purple-500"></i> Track Order</a></li>
                         <li><a href="#how-to-buy" class="hover:text-purple-400 transition flex items-center gap-1.5"><i class="fa-solid fa-chevron-right text-[9px] text-purple-500"></i> How to Buy</a></li>
@@ -354,51 +354,51 @@
                 </div>
 
                 <!-- Col 3: Useful Links -->
-                <div>
+                <div class="flex flex-col items-center md:items-start text-center md:text-left">
                     <h4 class="text-white font-bold text-sm mb-4 uppercase tracking-wider font-en">Useful Links</h4>
-                    <ul class="space-y-2.5 text-[11px]">
+                    <ul class="space-y-2.5 text-[11px] flex flex-col items-center md:items-start">
                         <li><a href="{{ route('home') }}" class="hover:text-purple-400 transition flex items-center gap-1.5"><i class="fa-solid fa-chevron-right text-[9px] text-purple-500"></i> All Products</a></li>
                         <li><a href="{{ route('product.details', 'gemini-pro-18m') }}" class="hover:text-purple-400 transition flex items-center gap-1.5"><i class="fa-solid fa-chevron-right text-[9px] text-purple-500"></i> Gemini AI Pro 18M</a></li>
-                        <li><a href="#products-section" class="hover:text-purple-400 transition flex items-center gap-1.5"><i class="fa-solid fa-chevron-right text-[9px] text-purple-500"></i> AI Tools</a></li>
-                        <li><a href="#products-section" class="hover:text-purple-400 transition flex items-center gap-1.5"><i class="fa-solid fa-chevron-right text-[9px] text-purple-500"></i> Software Licenses</a></li>
+                        <li><a href="{{ route('home') }}#trending-section" class="hover:text-purple-400 transition flex items-center gap-1.5"><i class="fa-solid fa-chevron-right text-[9px] text-purple-500"></i> AI Tools</a></li>
+                        <li><a href="{{ route('home') }}#trending-section" class="hover:text-purple-400 transition flex items-center gap-1.5"><i class="fa-solid fa-chevron-right text-[9px] text-purple-500"></i> Software Licenses</a></li>
                         <li><a href="{{ route('admin.login') }}" class="hover:text-purple-400 transition flex items-center gap-1.5"><i class="fa-solid fa-chevron-right text-[9px] text-purple-500"></i> Admin Panel</a></li>
                     </ul>
                 </div>
 
                 <!-- Col 4: Follow Us & Payment Methods -->
-                <div>
+                <div class="flex flex-col items-center md:items-start text-center md:text-left">
                     <h4 class="text-white font-bold text-sm mb-4 uppercase tracking-wider font-en">Follow Us</h4>
-                    <p class="text-[11px] mb-3">Stay connected with our official channels:</p>
-                    <div class="flex items-center gap-2 mb-6">
+                    <p class="text-[11px] mb-3 text-slate-400">Stay connected with our official channels:</p>
+                    <div class="flex items-center justify-center md:justify-start gap-2.5 mb-6">
                         @if(!empty($settings['facebook_url']))
-                        <a href="{{ $settings['facebook_url'] }}" target="_blank" class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 hover:bg-blue-600 hover:border-blue-600 text-white flex items-center justify-center transition">
+                        <a href="{{ $settings['facebook_url'] }}" target="_blank" class="w-9 h-9 rounded-xl bg-slate-900 border border-slate-800 hover:bg-blue-600 hover:border-blue-600 text-white flex items-center justify-center transition shadow-sm" title="Facebook">
                             <i class="fa-brands fa-facebook-f text-xs"></i>
                         </a>
                         @endif
                         @if(!empty($settings['whatsapp_number']))
-                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $settings['whatsapp_number']) }}" target="_blank" class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 hover:bg-emerald-600 hover:border-emerald-600 text-white flex items-center justify-center transition">
-                            <i class="fa-brands fa-whatsapp text-xs"></i>
+                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $settings['whatsapp_number']) }}" target="_blank" class="w-9 h-9 rounded-xl bg-slate-900 border border-slate-800 hover:bg-emerald-600 hover:border-emerald-600 text-white flex items-center justify-center transition shadow-sm" title="WhatsApp">
+                            <i class="fa-brands fa-whatsapp text-sm"></i>
                         </a>
                         @endif
-                        <a href="#" class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 hover:bg-cyan-500 hover:border-cyan-500 text-white flex items-center justify-center transition">
-                            <i class="fa-brands fa-telegram text-xs"></i>
+                        <a href="#" class="w-9 h-9 rounded-xl bg-slate-900 border border-slate-800 hover:bg-cyan-500 hover:border-cyan-500 text-white flex items-center justify-center transition shadow-sm" title="Telegram">
+                            <i class="fa-brands fa-telegram text-sm"></i>
                         </a>
-                        <a href="#" class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 hover:bg-red-600 hover:border-red-600 text-white flex items-center justify-center transition">
+                        <a href="#" class="w-9 h-9 rounded-xl bg-slate-900 border border-slate-800 hover:bg-red-600 hover:border-red-600 text-white flex items-center justify-center transition shadow-sm" title="YouTube">
                             <i class="fa-brands fa-youtube text-xs"></i>
                         </a>
                     </div>
 
-                    <h5 class="text-white font-semibold text-xs mb-2">WE ACCEPT:</h5>
-                    <div class="flex flex-wrap gap-2 text-[10px] font-bold">
-                        <span class="bg-pink-950/60 border border-pink-700/50 text-pink-300 px-2 py-1 rounded">bKash</span>
-                        <span class="bg-orange-950/60 border border-orange-700/50 text-orange-300 px-2 py-1 rounded">Nagad</span>
-                        <span class="bg-purple-950/60 border border-purple-700/50 text-purple-300 px-2 py-1 rounded">Rocket</span>
+                    <h5 class="text-white font-semibold text-xs mb-2.5">WE ACCEPT:</h5>
+                    <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 text-[10px] font-bold">
+                        <span class="bg-pink-950/60 border border-pink-700/50 text-pink-300 px-3 py-1 rounded-lg">bKash</span>
+                        <span class="bg-orange-950/60 border border-orange-700/50 text-orange-300 px-3 py-1 rounded-lg">Nagad</span>
+                        <span class="bg-purple-950/60 border border-purple-700/50 text-purple-300 px-3 py-1 rounded-lg">Rocket</span>
                     </div>
                 </div>
             </div>
 
             <!-- Bottom Subfooter -->
-            <div class="pt-6 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-500 gap-3">
+            <div class="pt-6 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-500 gap-3 text-center sm:text-left">
                 <p>© {{ date('Y') }} Digital Mart BD. All rights reserved.</p>
                 <p class="text-slate-600">Built with Laravel & Ultra-Speed Architecture</p>
             </div>
@@ -406,7 +406,6 @@
         </div>
     </footer>
 
-    <!-- Floating WhatsApp Bubble -->
     <!-- Floating WhatsApp Bubble -->
     @if(!empty($settings['whatsapp_number']))
     <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $settings['whatsapp_number']) }}" target="_blank"
