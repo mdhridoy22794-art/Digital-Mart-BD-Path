@@ -130,8 +130,12 @@
         }
     </style>
 
-    <!-- Meta Pixel Code -->
-    @if(!empty($settings['meta_pixel_id']))
+    <!-- Meta Pixel Code (Supports single or multiple Pixel IDs separated by commas or newlines) -->
+    @php
+        $rawPixelIds = $settings['meta_pixel_id'] ?? '';
+        $pixelIds = array_values(array_filter(array_map('trim', preg_split('/[,;\r\n]+/', (string)$rawPixelIds))));
+    @endphp
+    @if(count($pixelIds) > 0)
     <script>
         !function(f,b,e,v,n,t,s)
         {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -141,12 +145,16 @@
         t.src=v;s=b.getElementsByTagName(e)[0];
         s.parentNode.insertBefore(t,s)}(window, document,'script',
         'https://connect.facebook.net/en_US/fbevents.js');
-        fbq('init', '{{ $settings['meta_pixel_id'] }}');
+        @foreach($pixelIds as $pid)
+        fbq('init', '{{ $pid }}');
+        @endforeach
         fbq('track', 'PageView');
     </script>
     <noscript>
+        @foreach($pixelIds as $pid)
         <img height="1" width="1" style="display:none" 
-             src="https://www.facebook.com/tr?id={{ $settings['meta_pixel_id'] }}&ev=PageView&noscript=1"/>
+             src="https://www.facebook.com/tr?id={{ $pid }}&ev=PageView&noscript=1"/>
+        @endforeach
     </noscript>
     @endif
 

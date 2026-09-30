@@ -23,12 +23,19 @@
             </div>
         </div>
 
-        <a href="{{ route('product.details', $product->slug) }}" target="_blank" 
-           class="px-5 py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white border border-white/15 text-xs font-bold transition flex items-center gap-2 shrink-0 font-bn">
-            <i class="fa-solid fa-eye text-xs"></i>
-            <span>লাইভ পোস্ট দেখুন</span>
-            <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-slate-400"></i>
-        </a>
+        <div class="flex items-center gap-2.5 shrink-0">
+            <button type="button" onclick="copyText('{{ route('product.details', $product->slug) }}', this)" 
+                    class="px-4 py-2.5 rounded-2xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition flex items-center gap-2 font-bn shadow-md border border-purple-400/40"
+                    title="ফেসবুক অ্যাডের জন্য প্রোডাক্ট লিংক কপি করুন">
+                <i class="fa-regular fa-copy text-xs"></i>
+                <span>অ্যাডের লিংক কপি করুন</span>
+            </button>
+            <a href="{{ route('product.details', $product->slug) }}" target="_blank" 
+               class="px-4 py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white border border-white/15 text-xs font-bold transition flex items-center gap-2 font-bn">
+                <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
+                <span>লাইভ দেখুন</span>
+            </a>
+        </div>
     </div>
 
     <!-- Main Grid: Left Form Controls & Right Live Preview -->

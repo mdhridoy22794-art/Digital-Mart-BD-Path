@@ -25,17 +25,17 @@
 
             <div class="space-y-5">
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-2 flex items-center justify-between font-bn">
+                    <label class="block text-xs font-bold text-slate-700 mb-2 flex flex-col sm:flex-row sm:items-center justify-between gap-1 font-bn">
                         <span class="flex items-center gap-1.5">
                             <i class="fa-solid fa-crosshairs text-blue-500"></i>
                             <span>Meta Pixel ID (ফেসবুক পিক্সেল আইডি)</span>
                         </span>
-                        <span class="text-[11px] text-brand-600 font-mono font-medium">উদাঃ 123456789012345</span>
+                        <span class="text-[11px] text-brand-600 font-mono font-medium">একাধিক থাকলে কমা (,) দিয়ে দিন: 111111, 222222</span>
                     </label>
 
                     <div class="relative">
                         <input type="text" name="meta_pixel_id" value="{{ $settings['meta_pixel_id'] ?? '' }}" 
-                               placeholder="আপনার ফেসবুক মেটা পিক্সেল আইডিটি এখানে পেস্ট করুন"
+                               placeholder="উদাঃ 123456789012345 (একাধিক মার্কেটারের পিক্সেল থাকলে কমা দিয়ে আলাদা করে বসান)"
                                class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200/90 text-xs sm:text-sm font-mono text-slate-800 placeholder-slate-400 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition">
                     </div>
 

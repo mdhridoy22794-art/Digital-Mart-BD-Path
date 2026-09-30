@@ -102,9 +102,17 @@
                                 <!-- View Live -->
                                 <a href="{{ route('product.details', $prod->slug) }}" target="_blank" 
                                    class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 transition flex items-center justify-center shadow-sm" 
-                                   title="লাইভ পেজ দেখুন">
+                                   title="লাইভ সেলস পেজ দেখুন">
                                     <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
                                 </a>
+
+                                <!-- Copy Link For Facebook Ads -->
+                                <button type="button" 
+                                        onclick="copyText('{{ route('product.details', $prod->slug) }}', this)" 
+                                        class="w-8 h-8 rounded-xl bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white border border-blue-200 hover:border-blue-600 transition flex items-center justify-center shadow-sm" 
+                                        title="অ্যাডের জন্য প্রোডাক্ট লিংক কপি করুন">
+                                    <i class="fa-regular fa-copy text-xs"></i>
+                                </button>
 
                                 <!-- Edit -->
                                 <a href="{{ route('admin.products.edit', $prod->id) }}" 
