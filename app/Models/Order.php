@@ -14,16 +14,20 @@ class Order extends Model
         'product_id',
         'customer_name',
         'customer_phone',
+        'customer_email',
         'quantity',
         'amount',
         'payment_method',
         'sender_phone',
         'trx_id',
+        'invoice_id',
+        'val_id',
         'screenshot_path',
         'status',
         'digital_link_id',
         'delivered_link',
         'admin_notes',
+        'payment_gateway_response',
     ];
 
     protected $casts = [

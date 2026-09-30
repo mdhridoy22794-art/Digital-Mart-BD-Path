@@ -70,8 +70,8 @@
                     <i class="fa-solid fa-wallet text-xl"></i>
                 </div>
                 <div>
-                    <h3 class="font-extrabold text-base text-slate-900 font-bn">বিকাশ ও নগদ পেমেন্ট নম্বর</h3>
-                    <p class="text-xs text-slate-400 font-bn">চেকআউট পেজে কাস্টমাররা যে নম্বরে Send Money করে পেমেন্ট সম্পন্ন করবে</p>
+                    <h3 class="font-extrabold text-base text-slate-900 font-bn">ম্যানুয়াল বিকাশ ও নগদ পেমেন্ট নম্বর</h3>
+                    <p class="text-xs text-slate-400 font-bn">চেকআউট পেজে কাস্টমাররা ম্যানুয়ালি Send Money করতে চাইলে এই নম্বরে টাকা পাঠাবে</p>
                 </div>
             </div>
 
@@ -100,6 +100,54 @@
                     </div>
                     <input type="text" name="nagad_number" value="{{ $settings['nagad_number'] ?? '01934779775' }}" required
                            class="w-full px-4 py-2.5 rounded-xl bg-white border border-orange-200 text-sm font-mono font-bold text-slate-800 focus:border-orange-600 focus:ring-2 focus:ring-orange-500/20 outline-none transition">
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. ZiniPay Automated Payment Gateway Settings -->
+        <div class="bg-white rounded-3xl border border-slate-200/80 shadow-sm p-6 sm:p-8 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full blur-2xl pointer-events-none"></div>
+
+            <div class="flex items-center gap-3.5 pb-5 mb-6 border-b border-slate-100">
+                <div class="w-12 h-12 rounded-2xl bg-purple-50 text-brand-600 flex items-center justify-center text-xl shadow-inner">
+                    <i class="fa-solid fa-bolt-lightning text-xl text-purple-600"></i>
+                </div>
+                <div>
+                    <h3 class="font-extrabold text-base text-slate-900 font-bn">ZiniPay অটোমেটেড পেমেন্ট গেটওয়ে (Auto Payment Gateway)</h3>
+                    <p class="text-xs text-slate-400 font-bn">অটোমেটিক বিকাশ, নগদ, রকেট পেমেন্ট ও স্বয়ংক্রিয় ১-সেকেন্ড লিংক ডেলিভারি</p>
+                </div>
+            </div>
+
+            <div class="space-y-5">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-2 font-bn">গেটওয়ে স্ট্যাটাস (Status)</label>
+                        <select name="zinipay_status" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200/90 text-xs sm:text-sm font-bn text-slate-800 focus:bg-white focus:border-brand-500 outline-none transition">
+                            <option value="active" {{ ($settings['zinipay_status'] ?? 'active') == 'active' ? 'selected' : '' }}>সক্রিয় (Active - Recommended)</option>
+                            <option value="inactive" {{ ($settings['zinipay_status'] ?? '') == 'inactive' ? 'selected' : '' }}>নিষ্ক্রিয় (Inactive)</option>
+                        </select>
+                    </div>
+
+                    <div class="sm:col-span-2">
+                        <label class="block text-xs font-bold text-slate-700 mb-2 font-bn flex items-center justify-between">
+                            <span>ZiniPay Brand Key / API Key *</span>
+                            <span class="text-[11px] text-brand-600 font-normal">dash.zinipay.com থেকে প্রাপ্ত</span>
+                        </label>
+                        <input type="text" name="zinipay_api_key" value="{{ $settings['zinipay_api_key'] ?? '4e16b90fb1c397d0b5a4c4f32deab4349dad06172d2683fa' }}" required
+                               placeholder="আপনার ZiniPay Brand Key এখানে দিন"
+                               class="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200/90 text-xs sm:text-sm font-mono text-slate-800 focus:bg-white focus:border-brand-500 focus:ring-2 focus:ring-purple-500/10 outline-none transition">
+                    </div>
+                </div>
+
+                <!-- Webhook URL Info Box -->
+                <div class="p-4 rounded-2xl bg-purple-50/60 border border-purple-100 space-y-2 text-xs">
+                    <span class="font-bold text-purple-900 block font-bn">
+                        <i class="fa-solid fa-link text-brand-purple mr-1"></i>
+                        ZiniPay Webhook URL (যদি ব্র্যান্ড সেটিংসে দিতে চান):
+                    </span>
+                    <div class="flex items-center justify-between bg-white px-3 py-2 rounded-xl border border-purple-200 font-mono text-[11px] text-slate-700 select-all">
+                        <span>https://digital-mart-bd.onrender.com/payment/zinipay/webhook</span>
+                    </div>
                 </div>
             </div>
         </div>

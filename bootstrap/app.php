@@ -14,6 +14,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->trustProxies(at: '*');
         $middleware->validateCsrfTokens(except: [
             'order/process',
+            'payment/zinipay/init',
+            'payment/zinipay/callback',
+            'payment/zinipay/webhook',
         ]);
         $middleware->redirectTo(
             guests: '/admin/login',

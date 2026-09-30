@@ -225,4 +225,26 @@ class HomeController extends Controller
 
         return view('frontend.track', compact('orders', 'query', 'settings'));
     }
+
+    public function orderSuccess($orderNumber)
+    {
+        $order = Order::where('order_number', $orderNumber)->with(['product', 'digitalLinks'])->firstOrFail();
+        $settings = Setting::pluck('value', 'key')->toArray();
+
+        $deliveredLinks = [];
+        if (!empty($order->delivered_link)) {
+            $urls = preg_split('/\r\n|\r|\n/', trim($order->delivered_link));
+            foreach ($urls as $idx => $url) {
+                $u = trim($url);
+                if (!empty($u)) {
+                    $deliveredLinks[] = [
+                        'serial' => $idx + 1,
+                        'url' => $u,
+                    ];
+                }
+            }
+        }
+
+        return view('frontend.order_success', compact('order', 'deliveredLinks', 'settings'));
+    }
 }

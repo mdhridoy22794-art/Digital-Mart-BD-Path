@@ -3,12 +3,20 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ZiniPayController;
 
 // --- Frontend Public Routes ---
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/product/{slug}', [HomeController::class, 'productDetails'])->name('product.details');
 Route::post('/order/process', [HomeController::class, 'processOrder'])->name('order.process');
+Route::get('/order/{order_number}/success', [HomeController::class, 'orderSuccess'])->name('order.success');
 Route::get('/track', [HomeController::class, 'trackOrder'])->name('order.track');
+
+// --- ZiniPay Payment Gateway Routes ---
+Route::post('/payment/zinipay/init', [ZiniPayController::class, 'initPayment'])->name('payment.zinipay.init');
+Route::match(['get', 'post'], '/payment/zinipay/callback', [ZiniPayController::class, 'handleCallback'])->name('payment.zinipay.callback');
+Route::post('/payment/zinipay/webhook', [ZiniPayController::class, 'handleWebhook'])->name('payment.zinipay.webhook');
+Route::get('/payment/zinipay/cancel', [ZiniPayController::class, 'handleCancel'])->name('payment.zinipay.cancel');
 
 // --- Admin Authentication Routes ---
 Route::get('/admin/login', [AdminController::class, 'showLogin'])->name('admin.login');
