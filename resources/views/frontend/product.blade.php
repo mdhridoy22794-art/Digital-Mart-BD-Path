@@ -165,7 +165,7 @@
 
                     <p class="text-center text-[11px] text-slate-400 flex items-center justify-center gap-1.5">
                         <i class="fa-solid fa-lock text-emerald-500"></i>
-                        <span>বিকাশ ও নগদ পেমেন্ট সফল হওয়ামাত্র স্বয়ংক্রিয়ভাবে স্ক্রিনে সিরিয়াল অনুযায়ী লিংকগুলো চলে আসবে</span>
+                        <span>১০০% নিরাপদ অটোমেটেড পেমেন্ট • পেমেন্ট সফল হওয়ামাত্র স্বয়ংক্রিয়ভাবে স্ক্রিনে ইনস্ট্যান্ট লিংক চলে আসবে</span>
                     </p>
                 </div>
 
@@ -201,7 +201,7 @@
                 </div>
                 <h3 class="font-bold text-sm text-slate-800 mb-1">অর্ডার ও পেমেন্ট</h3>
                 <p class="text-xs text-slate-500 leading-relaxed">
-                    পরিমাণ নির্বাচন করে 'Buy Now' চাপুন এবং প্রদর্শিত বিকাশ বা নগদ নম্বরে মোট টাকা Send Money করে TrxID দিন।
+                    পরিমাণ নির্বাচন করে 'Buy Now' চাপুন এবং আপনার নাম ও মোবাইল নম্বর দিয়ে সরাসরি পেমেন্ট সম্পন্ন করুন।
                 </p>
             </div>
 
@@ -340,14 +340,6 @@
                             <span>মোট পরিমাণ:</span>
                             <span class="font-bold text-purple-700 font-mono"><span id="modalSummaryQty">1</span>টি অ্যাক্টিভেশন লিংক</span>
                         </div>
-                        <div class="flex items-center justify-between text-xs font-bn text-slate-600">
-                            <span>পেমেন্ট গেটওয়ে:</span>
-                            <div class="flex items-center gap-1.5">
-                                <span class="px-2 py-0.5 rounded bg-pink-100 text-pink-700 font-mono text-[10px] font-bold">bKash</span>
-                                <span class="px-2 py-0.5 rounded bg-orange-100 text-orange-700 font-mono text-[10px] font-bold">Nagad</span>
-                                <span class="px-2 py-0.5 rounded bg-purple-100 text-purple-700 font-mono text-[10px] font-bold">Rocket</span>
-                            </div>
-                        </div>
                         <div class="pt-2 border-t border-purple-200/70 flex items-center justify-between">
                             <span class="text-xs font-bold text-slate-900 font-bn">সর্বমোট প্রদেয় অর্থ:</span>
                             <span id="modalPayableAmount" class="text-lg font-black text-slate-900 font-en">৳{{ number_format($product->offer_price, 0) }}</span>
@@ -362,7 +354,7 @@
                     <button type="submit" id="submitOrderBtn" class="w-full py-3.5 px-4 rounded-xl text-white font-bold text-sm gradient-brand gradient-brand-hover shadow-lg shadow-purple-500/20 flex items-center justify-center gap-2 transition duration-200 btn-shine mt-4">
                         <span id="btnDefaultText" class="flex items-center gap-2">
                             <i class="fa-solid fa-lock"></i>
-                            <span id="submitBtnLabel">⚡ পেমেন্ট করতে এগিয়ে যান (বিকাশ / নগদ)</span>
+                            <span id="submitBtnLabel">⚡ অর্ডার কনফার্ম ও পেমেন্ট করুন</span>
                         </span>
                         <span id="btnLoadingText" class="hidden flex items-center gap-2">
                             <i class="fa-solid fa-circle-notch fa-spin"></i>
@@ -489,7 +481,7 @@
 
         const submitBtnLabel = document.getElementById('submitBtnLabel');
         if (submitBtnLabel) {
-            submitBtnLabel.innerText = `⚡ পেমেন্ট করতে এগিয়ে যান (৳${totalFormatted})`;
+            submitBtnLabel.innerText = `⚡ অর্ডার কনফার্ম ও পেমেন্ট করুন (৳${totalFormatted})`;
         }
     }
 
@@ -497,9 +489,6 @@
         document.getElementById('checkoutModal').classList.remove('hidden');
         document.body.style.overflow = 'hidden';
         
-        // Initial setup for payment method
-        const checkedMethod = document.querySelector('input[name="payment_method"]:checked')?.value || 'zinipay';
-        // direct zinipay
         updateQuantityUI();
 
         if (typeof fbq === 'function') {
@@ -514,33 +503,6 @@
     function closeCheckoutModal() {
         document.getElementById('checkoutModal').classList.add('hidden');
         document.body.style.overflow = 'auto';
-    }
-
-    function updatePaymentInstructions(method) {
-        const numberSpan = document.getElementById('activePaymentNumber');
-        const titleSpan = document.getElementById('paymentTitle');
-        const badgeSpan = document.getElementById('paymentTypeBadge');
-
-        if (method === 'bkash') {
-            numberSpan.innerText = bkashNumber;
-            titleSpan.innerText = 'বিকাশ পার্সোনাল নম্বরে Send Money করুন:';
-            badgeSpan.innerText = 'bKash Personal';
-            badgeSpan.className = 'text-[11px] font-bold text-pink-600 uppercase';
-        } else {
-            numberSpan.innerText = nagadNumber;
-            titleSpan.innerText = 'নগদ পার্সোনাল নম্বরে Send Money করুন:';
-            badgeSpan.innerText = 'Nagad Personal';
-            badgeSpan.className = 'text-[11px] font-bold text-orange-600 uppercase';
-        }
-    }
-
-    function copyPaymentNumber() {
-        const number = document.getElementById('activePaymentNumber').innerText.trim();
-        navigator.clipboard.writeText(number).then(() => {
-            const btnText = document.getElementById('copyBtnText');
-            btnText.innerText = 'কপি হয়েছে!';
-            setTimeout(() => { btnText.innerText = 'নম্বর কপি করুন'; }, 2000);
-        });
     }
 
     async function submitOrder(e) {
