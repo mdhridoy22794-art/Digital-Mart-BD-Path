@@ -85,7 +85,7 @@
                         </span>
                         <span class="px-2 py-0.5 rounded bg-pink-100 text-pink-700 font-mono text-[10px] font-bold">Send Money</span>
                     </div>
-                    <input type="text" name="bkash_number" value="{{ $settings['bkash_number'] ?? '01934779775' }}" required
+                    <input type="text" name="bkash_number" value="{{ $settings['bkash_number'] ?? '01322765651' }}" required
                            class="w-full px-4 py-2.5 rounded-xl bg-white border border-pink-200 text-sm font-mono font-bold text-slate-800 focus:border-pink-600 focus:ring-2 focus:ring-pink-500/20 outline-none transition">
                 </div>
 
@@ -98,7 +98,7 @@
                         </span>
                         <span class="px-2 py-0.5 rounded bg-orange-100 text-orange-700 font-mono text-[10px] font-bold">Send Money</span>
                     </div>
-                    <input type="text" name="nagad_number" value="{{ $settings['nagad_number'] ?? '01934779775' }}" required
+                    <input type="text" name="nagad_number" value="{{ $settings['nagad_number'] ?? '01322765651' }}" required
                            class="w-full px-4 py-2.5 rounded-xl bg-white border border-orange-200 text-sm font-mono font-bold text-slate-800 focus:border-orange-600 focus:ring-2 focus:ring-orange-500/20 outline-none transition">
                 </div>
             </div>
@@ -170,7 +170,7 @@
                         <i class="fa-brands fa-whatsapp text-emerald-500"></i>
                         <span>হোয়াটসঅ্যাপ হেল্পলাইন নম্বর</span>
                     </label>
-                    <input type="text" name="whatsapp_number" value="{{ $settings['whatsapp_number'] ?? '+8801934779775' }}" required
+                    <input type="text" name="whatsapp_number" value="{{ $settings['whatsapp_number'] ?? '+8801322765651' }}" required
                            class="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200/90 text-xs sm:text-sm font-mono text-slate-800 focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition">
                 </div>
 

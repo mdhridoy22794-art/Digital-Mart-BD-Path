@@ -29,9 +29,9 @@ class DatabaseSeeder extends Seeder
         $settings = [
             'site_title' => 'Digital Mart BD - সর্ববৃহৎ ডিজিটাল সাবস্ক্রিপশন ও সফটওয়্যার স্টোর',
             'announcement_text' => '🔥 মেগা সেল চলছে! গুগল জেমিনাই প্রো ১৮ মাস মাত্র ২০০ টাকায়! পেমেন্ট করলেই ১ সেকেন্ডে ইনস্ট্যান্ট লিংক ডেলিভারি!',
-            'bkash_number' => '01934779775',
-            'nagad_number' => '01934779775',
-            'whatsapp_number' => '+8801934779775',
+            'bkash_number' => '01322765651',
+            'nagad_number' => '01322765651',
+            'whatsapp_number' => '+8801322765651',
             'facebook_url' => 'https://www.facebook.com/digitalmartbd.store',
             'meta_pixel_id' => '',
             'custom_header_script' => '',

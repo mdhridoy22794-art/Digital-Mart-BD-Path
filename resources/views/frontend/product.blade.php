@@ -328,85 +328,33 @@
                                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:border-brand-purple outline-none font-en">
                     </div>
 
-                    @php
-                        $isZiniActive = ($settings['zinipay_status'] ?? 'active') !== 'inactive';
-                    @endphp
+                    <input type="hidden" name="payment_method" value="zinipay">
 
-                    <!-- Payment Method Selection -->
-                    <div class="mb-4">
-                        <label class="block text-xs font-semibold text-slate-700 mb-2 font-bn">পেমেন্ট মেথড নির্বাচন করুন *</label>
-                        <div class="space-y-2.5">
-                            @if($isZiniActive)
-                            <!-- ZiniPay Auto Gateway -->
-                            <label class="cursor-pointer border-2 border-purple-500 bg-purple-50/50 rounded-2xl p-3.5 flex items-center justify-between hover:border-purple-600 transition shadow-sm" id="methodLabelZini">
-                                <div class="flex items-center gap-3">
-                                    <input type="radio" name="payment_method" value="zinipay" checked onchange="handlePaymentMethodChange('zinipay')" class="accent-purple-700 w-4 h-4">
-                                    <div>
-                                        <div class="flex items-center gap-2">
-                                            <span class="font-extrabold text-xs text-slate-900 font-bn">⚡ অটো বিকাশ / নগদ / রকেট (Instant Pay)</span>
-                                            <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-bold font-bn">১ সেকেন্ডে ডেলিভারি</span>
-                                        </div>
-                                        <p class="text-[11px] text-slate-500 font-bn mt-0.5">TrxID লেখা লাগবে না • অটোমেটিক পেমেন্ট ভেরিফিকেশন</p>
-                                    </div>
-                                </div>
-                                <i class="fa-solid fa-bolt text-brand-purple text-lg"></i>
-                            </label>
-                            @endif
-
-                            <div class="grid grid-cols-2 gap-2.5">
-                                <!-- Manual bKash -->
-                                <label class="cursor-pointer border border-slate-200 rounded-xl p-3 flex items-center gap-2 hover:border-pink-500 transition has-[:checked]:border-pink-500 has-[:checked]:bg-pink-50/40" id="methodLabelBkash">
-                                    <input type="radio" name="payment_method" value="bkash" {{ !$isZiniActive ? 'checked' : '' }} onchange="handlePaymentMethodChange('bkash')" class="accent-pink-600">
-                                    <div>
-                                        <span class="font-bold text-xs text-pink-600 font-en block">bKash Send Money</span>
-                                        <span class="text-[10px] text-slate-400 font-bn">ম্যানুয়াল পেমেন্ট</span>
-                                    </div>
-                                </label>
-
-                                <!-- Manual Nagad -->
-                                <label class="cursor-pointer border border-slate-200 rounded-xl p-3 flex items-center gap-2 hover:border-orange-500 transition has-[:checked]:border-orange-500 has-[:checked]:bg-orange-50/40" id="methodLabelNagad">
-                                    <input type="radio" name="payment_method" value="nagad" onchange="handlePaymentMethodChange('nagad')" class="accent-orange-600">
-                                    <div>
-                                        <span class="font-bold text-xs text-orange-600 font-en block">Nagad Send Money</span>
-                                        <span class="text-[10px] text-slate-400 font-bn">ম্যানুয়াল পেমেন্ট</span>
-                                    </div>
-                                </label>
+                    <!-- Order Summary Box -->
+                    <div class="p-4 rounded-2xl bg-gradient-to-br from-purple-50/80 via-slate-50 to-pink-50/40 border border-purple-200/90 mb-4 space-y-2.5">
+                        <div class="flex items-center justify-between text-xs font-bn text-slate-600">
+                            <span>প্রোডাক্ট:</span>
+                            <span class="font-bold text-slate-900">{{ $product->name }}</span>
+                        </div>
+                        <div class="flex items-center justify-between text-xs font-bn text-slate-600">
+                            <span>মোট পরিমাণ:</span>
+                            <span class="font-bold text-purple-700 font-mono"><span id="modalSummaryQty">1</span>টি অ্যাক্টিভেশন লিংক</span>
+                        </div>
+                        <div class="flex items-center justify-between text-xs font-bn text-slate-600">
+                            <span>পেমেন্ট গেটওয়ে:</span>
+                            <div class="flex items-center gap-1.5">
+                                <span class="px-2 py-0.5 rounded bg-pink-100 text-pink-700 font-mono text-[10px] font-bold">bKash</span>
+                                <span class="px-2 py-0.5 rounded bg-orange-100 text-orange-700 font-mono text-[10px] font-bold">Nagad</span>
+                                <span class="px-2 py-0.5 rounded bg-purple-100 text-purple-700 font-mono text-[10px] font-bold">Rocket</span>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Manual Send Money Section (Shown only if bKash or Nagad manual is selected) -->
-                    <div id="manualPaymentContainer" class="{{ $isZiniActive ? 'hidden' : '' }} space-y-4">
-                        <!-- Send Money Instructions Box -->
-                        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-700 space-y-2">
-                            <div class="flex items-center justify-between">
-                                <span class="font-semibold text-slate-800" id="paymentTitle">বিকাশ পার্সোনাল নম্বরে Send Money করুন:</span>
-                                <button type="button" onclick="copyPaymentNumber()" class="text-brand-purple hover:underline font-bold flex items-center gap-1">
-                                    <i class="fa-regular fa-copy"></i>
-                                    <span id="copyBtnText">নম্বর কপি করুন</span>
-                                </button>
-                            </div>
-                            <div class="flex items-center justify-between bg-white px-3.5 py-2.5 rounded-xl border border-slate-300">
-                                <span id="activePaymentNumber" class="text-base font-bold font-en tracking-wider text-slate-900">{{ $settings['bkash_number'] ?? '01934779775' }}</span>
-                                <span class="text-[11px] font-bold text-pink-600 uppercase" id="paymentTypeBadge">Personal</span>
-                            </div>
-                            <p class="text-[11px] text-slate-600">
-                                * মোট পরিশোধযোগ্য অর্থ: <strong id="modalPayableAmount" class="text-slate-900 font-en text-sm font-black">৳{{ number_format($product->offer_price, 0) }}</strong> (<span id="modalQtySummary" class="font-bold">1</span>টি লিংকের জন্য)। টাকা পাঠিয়ে নিচের বক্সে তথ্য দিন।
-                            </p>
+                        <div class="pt-2 border-t border-purple-200/70 flex items-center justify-between">
+                            <span class="text-xs font-bold text-slate-900 font-bn">সর্বমোট প্রদেয় অর্থ:</span>
+                            <span id="modalPayableAmount" class="text-lg font-black text-slate-900 font-en">৳{{ number_format($product->offer_price, 0) }}</span>
                         </div>
-
-                        <!-- Sender Phone & TrxID -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-700 mb-1">যে নম্বর থেকে টাকা পাঠিয়েছেন *</label>
-                                <input type="tel" name="sender_phone" id="manualSenderPhone" placeholder="017xxxxxxxx" 
-                                       class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:border-brand-purple outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-700 mb-1">ট্রানজেকশন আইডি (TrxID) *</label>
-                                <input type="text" name="trx_id" id="manualTrxId" placeholder="উদাঃ 9X7A4K3..." 
-                                       class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs uppercase focus:border-brand-purple outline-none font-en font-bold">
-                            </div>
+                        <div class="pt-1 flex items-center gap-1.5 text-[11px] text-slate-500 font-bn">
+                            <i class="fa-solid fa-shield-halved text-emerald-500"></i>
+                            <span>নিরাপদ অটোমেটেড গেটওয়ে • ১ সেকেন্ডে স্বয়ংক্রিয় লিংক ডেলিভারি</span>
                         </div>
                     </div>
 
@@ -414,7 +362,7 @@
                     <button type="submit" id="submitOrderBtn" class="w-full py-3.5 px-4 rounded-xl text-white font-bold text-sm gradient-brand gradient-brand-hover shadow-lg shadow-purple-500/20 flex items-center justify-center gap-2 transition duration-200 btn-shine mt-4">
                         <span id="btnDefaultText" class="flex items-center gap-2">
                             <i class="fa-solid fa-lock"></i>
-                            <span id="submitBtnLabel">⚡ সরাসরি পেমেন্ট করুন</span>
+                            <span id="submitBtnLabel">⚡ পেমেন্ট করতে এগিয়ে যান (বিকাশ / নগদ)</span>
                         </span>
                         <span id="btnLoadingText" class="hidden flex items-center gap-2">
                             <i class="fa-solid fa-circle-notch fa-spin"></i>
@@ -545,8 +493,8 @@
         const modalQtyDisplay = document.getElementById('modalQtyDisplay');
         if (modalQtyDisplay) modalQtyDisplay.innerText = currentQty;
 
-        const modalQtySummary = document.getElementById('modalQtySummary');
-        if (modalQtySummary) modalQtySummary.innerText = currentQty;
+        const modalSummaryQty = document.getElementById('modalSummaryQty');
+        if (modalSummaryQty) modalSummaryQty.innerText = currentQty;
 
         const modalPayableAmount = document.getElementById('modalPayableAmount');
         if (modalPayableAmount) modalPayableAmount.innerText = `৳${totalFormatted}`;
@@ -558,11 +506,7 @@
 
         const submitBtnLabel = document.getElementById('submitBtnLabel');
         if (submitBtnLabel) {
-            if (currentPaymentMethod === 'zinipay') {
-                submitBtnLabel.innerText = `⚡ bKash / Nagad দিয়ে সরাসরি পেমেন্ট করুন (৳${totalFormatted})`;
-            } else {
-                submitBtnLabel.innerText = `পেমেন্ট কনফার্ম ও ${currentQty}টি লিংক নিন (৳${totalFormatted})`;
-            }
+            submitBtnLabel.innerText = `⚡ পেমেন্ট করতে এগিয়ে যান (৳${totalFormatted})`;
         }
     }
 
@@ -572,7 +516,7 @@
         
         // Initial setup for payment method
         const checkedMethod = document.querySelector('input[name="payment_method"]:checked')?.value || 'zinipay';
-        handlePaymentMethodChange(checkedMethod);
+        // direct zinipay
         updateQuantityUI();
 
         if (typeof fbq === 'function') {
