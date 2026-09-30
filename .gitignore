@@ -17,3 +17,6 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+*credentials*
+*secret*
+*DO_NOT_PUBLISH*
