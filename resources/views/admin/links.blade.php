@@ -177,7 +177,7 @@
                     </thead>
                     <tbody class="divide-y divide-slate-100 text-slate-700">
                         @forelse($links as $link)
-                        <tr class="hover:bg-slate-50/80 transition duration-150">
+                        <tr class="{{ $link->status === 'sold' ? 'bg-slate-50/60 hover:bg-slate-100/80' : 'bg-white hover:bg-emerald-50/20' }} transition duration-150">
                             
                             <!-- Checkbox -->
                             <td class="py-4 px-4 text-center">
@@ -215,27 +215,36 @@
                             <!-- Status Badge -->
                             <td class="py-4 px-6">
                                 @if($link->status === 'available')
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                                    <span>ইন স্টক (Available)</span>
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-300 shadow-sm">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                    <span class="font-bn">🟢 স্টকে আছে (নতুন)</span>
                                 </span>
                                 @else
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-slate-100 text-slate-600 border border-slate-200">
-                                    <i class="fa-solid fa-lock text-[10px]"></i>
-                                    <span>বিক্রি হয়েছে (Sold)</span>
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-300 shadow-sm">
+                                    <i class="fa-solid fa-lock text-[11px] text-rose-600"></i>
+                                    <span class="font-bn">🔴 বিক্রি হয়েছে (ব্যবহৃত)</span>
                                 </span>
                                 @endif
                             </td>
 
-                            <!-- Delivered To Phone -->
-                            <td class="py-4 px-6 font-mono text-slate-700 font-semibold">
+                            <!-- Delivered To Phone & Order -->
+                            <td class="py-4 px-6">
                                 @if($link->delivered_to_phone)
-                                <span class="inline-flex items-center gap-1.5 text-xs text-slate-800">
-                                    <i class="fa-solid fa-phone text-slate-400 text-[10px]"></i>
-                                    {{ $link->delivered_to_phone }}
-                                </span>
+                                <div class="space-y-0.5">
+                                    <span class="inline-flex items-center gap-1 text-xs font-mono font-bold text-slate-900">
+                                        <i class="fa-solid fa-phone text-slate-400 text-[10px]"></i>
+                                        {{ $link->delivered_to_phone }}
+                                    </span>
+                                    @if($link->order)
+                                    <span class="block text-[10px] font-mono text-purple-700 font-bold">
+                                        অর্ডার #{{ $link->order->order_number }}
+                                    </span>
+                                    @endif
+                                </div>
                                 @else
-                                <span class="text-slate-400">—</span>
+                                <span class="inline-flex items-center gap-1 text-[11px] text-emerald-600 font-bn font-semibold bg-emerald-50/80 px-2 py-0.5 rounded border border-emerald-200">
+                                    <i class="fa-regular fa-circle-check text-[10px]"></i> অব্যবহৃত
+                                </span>
                                 @endif
                             </td>
 
@@ -245,7 +254,7 @@
                                 <span class="text-slate-800 font-semibold">{{ $link->delivered_at->format('d M, Y') }}</span><br>
                                 <span>{{ $link->delivered_at->format('h:i A') }}</span>
                                 @else
-                                <span class="text-slate-400">—</span>
+                                <span class="text-slate-400 font-bn text-xs">—</span>
                                 @endif
                             </td>
 

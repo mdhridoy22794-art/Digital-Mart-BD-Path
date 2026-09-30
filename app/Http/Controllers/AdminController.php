@@ -60,7 +60,7 @@ class AdminController extends Controller
     {
         $filter = $request->query('status', 'all');
         $productId = $request->query('product_id');
-        $query = DigitalLink::latest();
+        $query = DigitalLink::with(['order', 'product'])->latest();
 
         if ($filter !== 'all') {
             $query->where('status', $filter);
