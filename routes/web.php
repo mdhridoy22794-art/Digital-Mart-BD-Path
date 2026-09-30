@@ -46,6 +46,8 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::post('/links/clear-unsold', [AdminController::class, 'clearUnsoldLinks'])->name('links.clear-unsold');
     Route::post('/links/bulk-delete', [AdminController::class, 'bulkDeleteLinks'])->name('links.bulk-delete');
     Route::get('/orders', [AdminController::class, 'orders'])->name('orders');
+    Route::delete('/orders/{id}', [AdminController::class, 'destroyOrder'])->name('orders.destroy');
+    Route::post('/orders/bulk-delete', [AdminController::class, 'bulkDeleteOrders'])->name('orders.bulk-delete');
     Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
     Route::post('/settings', [AdminController::class, 'updateSettings'])->name('settings.update');
     Route::post('/password', [AdminController::class, 'updatePassword'])->name('password.update');

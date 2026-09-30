@@ -180,6 +180,27 @@ class AdminController extends Controller
         return view('admin.orders', compact('orders', 'search'));
     }
 
+    public function destroyOrder($id)
+    {
+        $order = Order::findOrFail($id);
+        $orderNumber = $order->order_number;
+        $order->delete();
+
+        return redirect()->route('admin.orders')->with('success', "অর্ডার #{$orderNumber} সফলভাবে মুছে ফেলা হয়েছে।");
+    }
+
+    public function bulkDeleteOrders(Request $request)
+    {
+        $ids = $request->input('selected_orders', []);
+        if (empty($ids) || !is_array($ids)) {
+            return redirect()->route('admin.orders')->with('error', 'কোনো অর্ডার নির্বাচন করা হয়নি!');
+        }
+
+        $count = Order::whereIn('id', $ids)->delete();
+
+        return redirect()->route('admin.orders')->with('success', "নির্বাচিত {$count}টি অর্ডার সফলভাবে মুছে ফেলা হয়েছে।");
+    }
+
     public function settings()
     {
         $settings = Setting::pluck('value', 'key')->toArray();

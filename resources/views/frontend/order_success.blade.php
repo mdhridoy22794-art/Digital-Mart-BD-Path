@@ -1,4 +1,4 @@
-@extends('frontend.layout')
+@extends('layouts.app')
 
 @section('title', 'অর্ডার সফল হয়েছে - ' . $order->order_number . ' | Digital Mart BD')
 
