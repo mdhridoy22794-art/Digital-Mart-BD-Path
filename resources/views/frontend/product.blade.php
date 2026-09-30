@@ -454,24 +454,7 @@
         updateQuantityUI();
     }
 
-    function handlePaymentMethodChange(method) {
-        currentPaymentMethod = method;
-        const manualContainer = document.getElementById('manualPaymentContainer');
-        const senderPhoneInput = document.getElementById('manualSenderPhone');
-        const trxIdInput = document.getElementById('manualTrxId');
-
-        if (method === 'zinipay') {
-            manualContainer.classList.add('hidden');
-            if (senderPhoneInput) senderPhoneInput.required = false;
-            if (trxIdInput) trxIdInput.required = false;
-        } else {
-            manualContainer.classList.remove('hidden');
-            if (senderPhoneInput) senderPhoneInput.required = true;
-            if (trxIdInput) trxIdInput.required = true;
-            updatePaymentInstructions(method);
-        }
-        updateQuantityUI();
-    }
+    
 
     function updateQuantityUI() {
         const total = currentQty * unitPrice;
