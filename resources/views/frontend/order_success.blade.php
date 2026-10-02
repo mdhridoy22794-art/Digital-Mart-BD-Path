@@ -99,6 +99,88 @@
                 @endif
             </div>
 
+            @if(!empty($settings['tutorial_video_url']))
+            <!-- Tutorial Video Trigger Button -->
+            <button type="button" 
+                    onclick="openTutorialVideoModal()" 
+                    class="w-full group relative overflow-hidden p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-red-600 via-rose-600 to-purple-700 hover:from-red-500 hover:to-purple-600 text-white shadow-lg shadow-rose-500/20 hover:shadow-rose-500/35 transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-between gap-3 text-left">
+                
+                <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center shrink-0 border border-white/30 group-hover:scale-110 transition duration-300 shadow-inner">
+                        <i class="fa-solid fa-play text-white text-xs sm:text-sm ml-0.5 animate-pulse"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="text-xs sm:text-sm font-extrabold tracking-wide text-white font-bn drop-shadow-sm">
+                                {{ $settings['tutorial_video_btn_text'] ?? 'ভিডিও দেখুন: ১ মিনিটে চালু করার নিয়ম' }}
+                            </span>
+                            <span class="px-1.5 py-0.5 rounded bg-amber-300 text-slate-950 font-bold text-[9px] uppercase tracking-wider font-sans">
+                                Video Guide
+                            </span>
+                        </div>
+                        <p class="text-[11px] sm:text-xs text-rose-100 font-bn truncate opacity-95">
+                            সহজে বুঝতে এবং কোনো ভুল না করতে ১ মিনিটের ভিডিওটি দেখুন
+                        </p>
+                    </div>
+                </div>
+
+                <div class="shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-white/10 group-hover:bg-white/25 transition">
+                    <i class="fa-solid fa-chevron-right text-xs text-white"></i>
+                </div>
+            </button>
+
+            <!-- Tutorial Video Modal -->
+            <div id="tutorialVideoModal" 
+                 class="fixed inset-0 z-50 hidden bg-slate-950/85 backdrop-blur-md p-3 sm:p-6 flex items-center justify-center transition-opacity duration-300 opacity-0"
+                 onclick="handleModalBackdropClick(event)">
+                <div class="relative w-full max-w-2xl bg-slate-900 border border-slate-700/80 rounded-3xl shadow-2xl overflow-hidden transform scale-95 transition-transform duration-300 flex flex-col max-h-[92vh]"
+                     onclick="event.stopPropagation()">
+                    
+                    <!-- Modal Header -->
+                    <div class="flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-slate-800 bg-slate-900/90">
+                        <div class="flex items-center gap-2.5">
+                            <span class="w-8 h-8 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center text-sm border border-rose-500/30">
+                                <i class="fa-solid fa-play ml-0.5"></i>
+                            </span>
+                            <div>
+                                <h3 class="text-xs sm:text-sm font-extrabold text-white font-bn">
+                                    {{ $settings['tutorial_video_btn_text'] ?? 'ভিডিও গাইড: কীভাবে চালু করবেন' }}
+                                </h3>
+                                <p class="text-[10px] text-slate-400 font-bn">ভিডিও দেখা শেষে ক্লোজ (✖) করে নিচে লিংক কপি করুন</p>
+                            </div>
+                        </div>
+                        <button type="button" 
+                                onclick="closeTutorialVideoModal(true)" 
+                                aria-label="Close"
+                                class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-rose-600 text-slate-300 hover:text-white flex items-center justify-center transition text-sm">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+
+                    <!-- Video Player Box -->
+                    <div class="p-2 sm:p-4 bg-black flex-1 flex items-center justify-center">
+                        <div id="videoContainer" class="w-full aspect-video rounded-xl overflow-hidden bg-slate-950 flex items-center justify-center text-slate-400 shadow-inner">
+                            <!-- Injected dynamically on open -->
+                        </div>
+                    </div>
+
+                    <!-- Modal Footer -->
+                    <div class="px-4 sm:px-6 py-3 border-t border-slate-800 bg-slate-900/95 flex items-center justify-between gap-3">
+                        <span class="text-[11px] text-slate-400 font-bn flex items-center gap-1.5">
+                            <i class="fa-solid fa-circle-check text-emerald-400"></i>
+                            <span>ভিডিও দেখে নিচের লিংকটি ব্রাউজারে চালু করুন</span>
+                        </span>
+                        <button type="button" 
+                                onclick="closeTutorialVideoModal(true)" 
+                                class="px-4 py-2 rounded-xl bg-brand-purple hover:bg-purple-600 text-white font-bold text-xs flex items-center gap-1.5 transition font-bn shadow-md shadow-purple-500/20">
+                            <i class="fa-regular fa-copy"></i>
+                            <span>লিংক কপি করতে ফেরত যান</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            @endif
+
             <!-- Activation Instructions Guide -->
             <div class="p-5 rounded-2xl bg-purple-50/70 border border-purple-200 text-xs text-slate-700 space-y-2">
                 <h4 class="font-bold text-brand-purple flex items-center gap-2 text-sm font-bn">
@@ -171,6 +253,104 @@
             order_id: "{{ $order->order_number }}"
         });
     }
+    @endif
+
+    // Tutorial Video Modal Management
+    @if(!empty($settings['tutorial_video_url']))
+    const rawTutorialVideo = @json($settings['tutorial_video_url']);
+
+    function parseTutorialVideo(raw) {
+        if (!raw) return '';
+        const trimmed = raw.trim();
+
+        // 1. Raw iframe code provided
+        if (trimmed.includes('<iframe')) {
+            return trimmed.replace(
+                /<iframe/i, 
+                '<iframe class="w-full h-full border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen'
+            );
+        }
+
+        // 2. YouTube URL (watch?v=, youtu.be/, shorts/, embed/)
+        const ytMatch = trimmed.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i);
+        if (ytMatch && ytMatch[1]) {
+            const videoId = ytMatch[1];
+            return `<iframe class="w-full h-full border-0" src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1" title="Tutorial Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
+        }
+
+        // 3. Direct HTML5 video (.mp4, .webm)
+        if (/\.(mp4|webm|ogg)($|\?)/i.test(trimmed)) {
+            return `<video src="${trimmed}" class="w-full h-full object-contain" controls autoplay playsinline></video>`;
+        }
+
+        // 4. Generic iframe fallback
+        return `<iframe class="w-full h-full border-0" src="${trimmed}" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
+    }
+
+    function openTutorialVideoModal() {
+        const modal = document.getElementById('tutorialVideoModal');
+        const container = document.getElementById('videoContainer');
+        if (!modal || !container) return;
+
+        container.innerHTML = parseTutorialVideo(rawTutorialVideo);
+        modal.classList.remove('hidden');
+        requestAnimationFrame(() => {
+            modal.classList.remove('opacity-0');
+            const card = modal.querySelector('.transform');
+            if (card) {
+                card.classList.remove('scale-95');
+                card.classList.add('scale-100');
+            }
+        });
+        document.body.style.overflow = 'hidden';
+
+        // Push history state so mobile physical back button closes modal smoothly
+        history.pushState({ tutorialVideoOpen: true }, '');
+    }
+
+    function closeTutorialVideoModal(shouldHistoryBack = false) {
+        const modal = document.getElementById('tutorialVideoModal');
+        const container = document.getElementById('videoContainer');
+        if (!modal || modal.classList.contains('hidden')) return;
+
+        modal.classList.add('opacity-0');
+        const card = modal.querySelector('.transform');
+        if (card) {
+            card.classList.remove('scale-100');
+            card.classList.add('scale-95');
+        }
+
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            if (container) container.innerHTML = ''; // Stop video & audio playback instantly
+            document.body.style.overflow = '';
+        }, 250);
+
+        if (shouldHistoryBack && history.state && history.state.tutorialVideoOpen) {
+            history.back();
+        }
+    }
+
+    function handleModalBackdropClick(e) {
+        if (e.target.id === 'tutorialVideoModal') {
+            closeTutorialVideoModal(true);
+        }
+    }
+
+    // Hardware back button / browser navigation listener
+    window.addEventListener('popstate', function(e) {
+        const modal = document.getElementById('tutorialVideoModal');
+        if (modal && !modal.classList.contains('hidden')) {
+            closeTutorialVideoModal(false); // don't push another history state
+        }
+    });
+
+    // Escape key listener for desktop users
+    window.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeTutorialVideoModal(true);
+        }
+    });
     @endif
 </script>
 @endsection

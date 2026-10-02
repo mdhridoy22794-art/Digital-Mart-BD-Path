@@ -243,6 +243,51 @@
             </div>
         </div>
 
+        <!-- 5. Tutorial Video Configuration -->
+        <div class="bg-white rounded-3xl border border-slate-200/80 shadow-sm p-6 sm:p-8 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-rose-500/5 rounded-full blur-2xl pointer-events-none"></div>
+
+            <div class="flex items-center gap-3.5 pb-5 mb-6 border-b border-slate-100">
+                <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center text-xl shadow-inner">
+                    <i class="fa-solid fa-circle-play text-2xl"></i>
+                </div>
+                <div>
+                    <h3 class="font-extrabold text-base text-slate-900 font-bn">টিউটোরিয়াল ও অ্যাক্টিভেশন গাইড ভিডিও (Tutorial Video)</h3>
+                    <p class="text-xs text-slate-400 font-bn">কাস্টমারদের জন্য ১ মিনিটে সার্ভিস চালু করার ভিডিও গাইড যুক্ত করুন (লিংক অথবা আইফ্রেম কোড)</p>
+                </div>
+            </div>
+
+            <div class="space-y-5">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-2 font-bn flex items-center justify-between">
+                        <span class="flex items-center gap-1.5">
+                            <i class="fa-brands fa-youtube text-red-600"></i>
+                            <span>ভিডিও লিংক অথবা HTML Embed কোড (Video URL / Iframe Code)</span>
+                        </span>
+                        <span class="text-[11px] text-brand-600 font-normal">YouTube Link / Shorts / Iframe</span>
+                    </label>
+                    <textarea name="tutorial_video_url" rows="3" 
+                              placeholder="উদাঃ https://youtu.be/xxxx অথবা https://www.youtube.com/watch?v=xxxx অথবা <iframe>...</iframe>"
+                              class="w-full p-4 rounded-2xl bg-slate-50 border border-slate-200/90 text-xs font-mono text-slate-800 placeholder-slate-400 focus:bg-white focus:border-rose-500 focus:ring-4 focus:ring-rose-500/10 outline-none transition">{{ $settings['tutorial_video_url'] ?? '' }}</textarea>
+                    <p class="text-[11px] text-slate-500 mt-1.5 font-bn">
+                        <i class="fa-solid fa-circle-info text-blue-500 mr-1"></i>
+                        এখানে সাধারণ YouTube লিংক বসালেও চলবে, আবার সম্পূর্ণ &lt;iframe&gt; এম্বেড কোড বসালেও কাজ করবে। বক্স খালি রাখলে ওয়েবসাইটে ভিডিও বাটনটি লুকিয়ে থাকবে।
+                    </p>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-2 font-bn flex items-center gap-1.5">
+                        <i class="fa-solid fa-pen text-brand-purple"></i>
+                        <span>বাটন টেক্সট (Button Label)</span>
+                    </label>
+                    <input type="text" name="tutorial_video_btn_text" 
+                           value="{{ $settings['tutorial_video_btn_text'] ?? 'ভিডিও দেখুন: ১ মিনিটে চালু করার নিয়ম' }}" 
+                           placeholder="উদাঃ ভিডিও দেখুন: ১ মিনিটে চালু করার নিয়ম"
+                           class="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200/90 text-xs sm:text-sm text-slate-800 focus:bg-white focus:border-brand-500 focus:ring-2 focus:ring-purple-500/20 outline-none transition font-bn">
+                </div>
+            </div>
+        </div>
+
         <!-- Sticky Save Button Bar -->
         <div class="sticky bottom-6 z-20 bg-white/90 backdrop-blur-md p-4 rounded-3xl border border-slate-200/90 shadow-xl flex items-center justify-between gap-4">
             <div class="flex items-center gap-2 text-xs text-slate-500 font-bn">
