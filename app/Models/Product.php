@@ -56,7 +56,7 @@ class Product extends Model
 
     public function getImageUrlAttribute()
     {
-        if (!empty($this->image_path)) {
+        if (!empty($this->image_path) && file_exists(public_path($this->image_path))) {
             return asset($this->image_path);
         }
 

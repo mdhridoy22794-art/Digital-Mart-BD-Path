@@ -41,7 +41,7 @@
                 <label class="text-xs font-bold text-slate-700 font-bn">কোন প্রোডাক্টের জন্য লিংক যুক্ত করছেন?</label>
                 <select name="product_id" class="px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-800 outline-none focus:border-brand-500">
                     @foreach($products as $prod)
-                    <option value="{{ $prod->id }}">{{ $prod->name }} (বর্তমান উপলব্ধ স্টক: {{ $prod->stock_count }}টি)</option>
+                    <option value="{{ $prod->id }}" {{ $prod->slug === 'gemini-pro-18m' ? 'selected' : '' }}>{{ $prod->name }} (বর্তমান উপলব্ধ স্টক: {{ $prod->stock_count }}টি)</option>
                     @endforeach
                 </select>
             </div>
