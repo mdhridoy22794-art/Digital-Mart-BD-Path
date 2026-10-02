@@ -9,6 +9,14 @@ use App\Http\Controllers\ZiniPayController;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/product/{slug}', [HomeController::class, 'productDetails'])->name('product.details');
 Route::get('/order/{order_number}/success', [HomeController::class, 'orderSuccess'])->name('order.success');
+Route::get('/order/success/{order_number}', [HomeController::class, 'orderSuccess']);
+Route::get('/order/success', function(\Illuminate\Http\Request $request) {
+    $orderNumber = $request->query('order_number') ?: \App\Models\Order::latest()->value('order_number');
+    if ($orderNumber) {
+        return redirect()->route('order.success', ['order_number' => $orderNumber]);
+    }
+    return redirect()->route('home');
+});
 Route::get('/track', [HomeController::class, 'trackOrder'])->name('order.track');
 
 // --- ZiniPay Payment Gateway Routes ---

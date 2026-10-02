@@ -175,7 +175,7 @@ class ZiniPayController extends Controller
         // Check if verified as completed
         if ($verifyResult['is_completed']) {
             $this->fulfillOrder($order, $verifyResult);
-            return redirect('https://digitalmartbd.xyz/order/success/' . $order->order_number);
+            return redirect()->route('order.success', ['order_number' => $order->order_number]);
         }
 
         return redirect('https://digitalmartbd.xyz/product/' . ($order->product->slug ?? 'gemini-pro-18m'))
