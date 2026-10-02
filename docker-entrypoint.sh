@@ -15,7 +15,8 @@ php artisan migrate --force
 php artisan db:seed --force
 php artisan optimize
 
-# Start Laravel server with PORT provided by Render
+# Start Laravel server with multi-worker concurrency for ad campaign traffic
 PORT=${PORT:-10000}
-echo "Starting Digital Mart BD on port $PORT..."
+export PHP_CLI_SERVER_WORKERS=16
+echo "Starting Digital Mart BD with 16 multi-process workers on port $PORT..."
 exec php artisan serve --host=0.0.0.0 --port=$PORT
