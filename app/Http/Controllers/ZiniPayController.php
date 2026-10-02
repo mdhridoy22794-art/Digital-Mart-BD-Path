@@ -175,10 +175,10 @@ class ZiniPayController extends Controller
         // Check if verified as completed
         if ($verifyResult['is_completed']) {
             $this->fulfillOrder($order, $verifyResult);
-            return redirect()->route('order.success', ['order_number' => $order->order_number]);
+            return redirect('https://digitalmartbd.xyz/order/success/' . $order->order_number);
         }
 
-        return redirect()->route('product.details', $order->product->slug ?? 'gemini-pro-18m')
+        return redirect('https://digitalmartbd.xyz/product/' . ($order->product->slug ?? 'gemini-pro-18m'))
             ->with('error', 'আপনার পেমেন্টটি এখনও সম্পন্ন হয়নি (স্ট্যাটাস: ' . ($verifyResult['status'] ?? 'PENDING') . ')।');
     }
 
@@ -234,7 +234,7 @@ class ZiniPayController extends Controller
             }
         }
 
-        return redirect()->route('home')->with('info', 'পেমেন্ট বাতিল করা হয়েছে। আপনি চাইলে পুনরায় অর্ডার করতে পারেন।');
+        return redirect('https://digitalmartbd.xyz')->with('info', 'পেমেন্ট বাতিল করা হয়েছে। আপনি চাইলে পুনরায় অর্ডার করতে পারেন।');
     }
 
     /**

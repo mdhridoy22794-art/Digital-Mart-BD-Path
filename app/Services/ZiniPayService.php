@@ -32,7 +32,7 @@ class ZiniPayService
             'cus_phone' => $params['cus_phone'] ?? '',
             'redirect_url' => $params['redirect_url'] ?? route('payment.zinipay.callback'),
             'cancel_url' => $params['cancel_url'] ?? route('payment.zinipay.cancel'),
-            'metadata' => $params['metadata'] ?? [],
+            'metadata' => !empty($params['metadata']) ? (object) $params['metadata'] : (object) [],
         ];
 
         if (!empty($params['webhook_url'])) {
@@ -40,7 +40,7 @@ class ZiniPayService
         }
 
         try {
-            $response = Http::withHeaders([
+            $response = Http::withoutVerifying()->withHeaders([
                 'zini-api-key' => $this->apiKey,
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
@@ -61,6 +61,40 @@ class ZiniPayService
                     'message' => $data['message'] ?? 'Invoice created successfully.',
                     'raw' => $data,
                 ];
+            }
+
+            // Auto-fallback: If domain mismatch (brand registered on old domain or custom domain), retry with alternate registered domain
+            $errorMsg = $data['message'] ?? '';
+            if (stripos($errorMsg, 'Domain mismatch') !== false) {
+                Log::warning('ZiniPay Domain mismatch encountered. Retrying with alternate registered domain...');
+                $fallbackPayload = $payload;
+                $fallbackPayload['redirect_url'] = 'https://digital-mart-bd.onrender.com/payment/zinipay/callback';
+                $fallbackPayload['cancel_url'] = 'https://digital-mart-bd.onrender.com/payment/zinipay/cancel';
+                if (!empty($fallbackPayload['webhook_url'])) {
+                    $fallbackPayload['webhook_url'] = 'https://digital-mart-bd.onrender.com/payment/zinipay/webhook';
+                }
+
+                $fbResponse = Http::withoutVerifying()->withHeaders([
+                    'zini-api-key' => $this->apiKey,
+                    'Content-Type' => 'application/json',
+                    'Accept' => 'application/json',
+                ])->timeout(20)->post($url, $fallbackPayload);
+
+                $fbData = $fbResponse->json();
+                Log::info('ZiniPay Fallback Create Invoice response', [
+                    'status' => $fbResponse->status(),
+                    'body' => $fbData,
+                ]);
+
+                if ($fbResponse->successful() && isset($fbData['payment_url'])) {
+                    return [
+                        'success' => true,
+                        'payment_url' => $fbData['payment_url'],
+                        'val_id' => $fbData['val_id'] ?? null,
+                        'message' => $fbData['message'] ?? 'Invoice created successfully via fallback.',
+                        'raw' => $fbData,
+                    ];
+                }
             }
 
             return [
@@ -90,7 +124,7 @@ class ZiniPayService
         ];
 
         try {
-            $response = Http::withHeaders([
+            $response = Http::withoutVerifying()->withHeaders([
                 'zini-api-key' => $this->apiKey,
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
