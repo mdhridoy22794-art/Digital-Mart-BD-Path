@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class AdminController extends Controller
 {
@@ -360,9 +361,7 @@ class AdminController extends Controller
         $product->badge = $request->input('badge') ?? 'OFFER';
         $product->is_active = $request->has('is_active') ? (bool)$request->input('is_active') : false;
         $product->description = $request->input('description');
-        if (!empty($featuresArray)) {
-            $product->features = $featuresArray;
-        }
+        $product->features = $featuresArray;
         $product->save();
 
         $linksAdded = 0;
@@ -466,9 +465,7 @@ class AdminController extends Controller
         $product->offer_price = $request->input('offer_price');
         $product->badge = $request->input('badge') ?? 'HOT DEAL';
         $product->description = $request->input('description');
-        if (!empty($featuresArray)) {
-            $product->features = $featuresArray;
-        }
+        $product->features = $featuresArray;
         $product->save();
 
         // Save Tutorial Video if submitted

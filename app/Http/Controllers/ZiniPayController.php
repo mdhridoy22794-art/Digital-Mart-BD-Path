@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\DigitalLink;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\Setting;
 use App\Services\ZiniPayService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -32,6 +33,13 @@ class ZiniPayController extends Controller
             'customer_phone' => 'required|string|max:20',
             'customer_email' => 'nullable|email|max:100',
         ]);
+
+        if (Setting::get('zinipay_status') === 'inactive') {
+            return response()->json([
+                'success' => false,
+                'message' => 'পেমেন্ট গেটওয়ে বর্তমানে সাময়িকভাবে বন্ধ রয়েছে। অনুগ্রহ করে হেল্পলাইনে যোগাযোগ করুন।',
+            ], 503);
+        }
 
         $slug = $validated['product_slug'] ?? 'gemini-pro-18m';
         $product = Product::where('slug', $slug)->first();
@@ -178,7 +186,8 @@ class ZiniPayController extends Controller
             return redirect()->route('order.success', ['order_number' => $order->order_number]);
         }
 
-        return redirect('https://digitalmartbd.xyz/product/' . ($order->product->slug ?? 'gemini-pro-18m'))
+        $productSlug = $order->product->slug ?? 'gemini-pro-18m';
+        return redirect()->route('product.details', ['slug' => $productSlug])
             ->with('error', 'আপনার পেমেন্টটি এখনও সম্পন্ন হয়নি (স্ট্যাটাস: ' . ($verifyResult['status'] ?? 'PENDING') . ')।');
     }
 
@@ -234,7 +243,7 @@ class ZiniPayController extends Controller
             }
         }
 
-        return redirect('https://digitalmartbd.xyz')->with('info', 'পেমেন্ট বাতিল করা হয়েছে। আপনি চাইলে পুনরায় অর্ডার করতে পারেন।');
+        return redirect()->route('home')->with('info', 'পেমেন্ট বাতিল করা হয়েছে। আপনি চাইলে পুনরায় অর্ডার করতে পারেন।');
     }
 
     /**

@@ -133,7 +133,7 @@
             <div id="tutorialVideoModal" 
                  class="fixed inset-0 z-50 hidden bg-slate-950/85 backdrop-blur-md p-3 sm:p-6 flex items-center justify-center transition-opacity duration-300 opacity-0"
                  onclick="handleModalBackdropClick(event)">
-                <div class="relative w-full max-w-2xl bg-slate-900 border border-slate-700/80 rounded-3xl shadow-2xl overflow-hidden transform scale-95 transition-transform duration-300 flex flex-col max-h-[92vh]"
+                <div class="relative w-full max-w-2xl bg-slate-900 border border-slate-700/80 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]"
                      onclick="event.stopPropagation()">
                     
                     <!-- Modal Header -->
@@ -158,8 +158,8 @@
                     </div>
 
                     <!-- Video Player Box -->
-                    <div class="p-2 sm:p-4 bg-black flex-1 flex items-center justify-center">
-                        <div id="videoContainer" class="w-full aspect-video rounded-xl overflow-hidden bg-slate-950 flex items-center justify-center text-slate-400 shadow-inner">
+                    <div class="p-2 sm:p-4 bg-black">
+                        <div id="videoContainer" class="relative w-full aspect-video rounded-2xl overflow-hidden bg-black shadow-2xl" style="position: relative; width: 100%; aspect-ratio: 16 / 9; min-height: 240px; background-color: #000000;">
                             <!-- Injected dynamically on open -->
                         </div>
                     </div>
@@ -288,9 +288,13 @@
 
         // 1. Raw iframe code provided
         if (trimmed.includes('<iframe')) {
-            return trimmed.replace(
+            let clean = trimmed
+                .replace(/width="[^"]*"/gi, '')
+                .replace(/height="[^"]*"/gi, '')
+                .replace(/style="[^"]*"/gi, '');
+            return clean.replace(
                 /<iframe/i, 
-                '<iframe class="w-full h-full border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen'
+                '<iframe class="absolute inset-0 w-full h-full border-0" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen'
             );
         }
 
@@ -298,23 +302,23 @@
         const ytMatch = trimmed.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i);
         if (ytMatch && ytMatch[1]) {
             const videoId = ytMatch[1];
-            return `<iframe class="w-full h-full border-0" src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1" title="Tutorial Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
+            return `<iframe class="absolute inset-0 w-full h-full border-0" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" src="https://www.youtube.com/embed/${videoId}?autoplay=1&playsinline=1&rel=0&enablejsapi=1" title="Tutorial Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
         }
 
         // 3. Google Drive preview support
         const gdMatch = trimmed.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/i);
         if (gdMatch && gdMatch[1]) {
             const fileId = gdMatch[1];
-            return `<iframe class="w-full h-full border-0" src="https://drive.google.com/file/d/${fileId}/preview" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
+            return `<iframe class="absolute inset-0 w-full h-full border-0" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" src="https://drive.google.com/file/d/${fileId}/preview" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
         }
 
-        // 3. Direct HTML5 video (.mp4, .webm)
+        // 4. Direct HTML5 video (.mp4, .webm)
         if (/\.(mp4|webm|ogg)($|\?)/i.test(trimmed)) {
-            return `<video src="${trimmed}" class="w-full h-full object-contain" controls autoplay playsinline></video>`;
+            return `<video src="${trimmed}" class="absolute inset-0 w-full h-full object-contain" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000;" controls autoplay playsinline></video>`;
         }
 
-        // 4. Generic iframe fallback
-        return `<iframe class="w-full h-full border-0" src="${trimmed}" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
+        // 5. Generic iframe fallback
+        return `<iframe class="absolute inset-0 w-full h-full border-0" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" src="${trimmed}" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
     }
 
     function openTutorialVideoModal() {
@@ -322,16 +326,11 @@
         const container = document.getElementById('videoContainer');
         if (!modal || !container) return;
 
-        container.innerHTML = parseTutorialVideo(rawTutorialVideo);
         modal.classList.remove('hidden');
         requestAnimationFrame(() => {
             modal.classList.remove('opacity-0');
-            const card = modal.querySelector('.transform');
-            if (card) {
-                card.classList.remove('scale-95');
-                card.classList.add('scale-100');
-            }
         });
+        container.innerHTML = parseTutorialVideo(rawTutorialVideo);
         document.body.style.overflow = 'hidden';
 
         // Push history state so mobile physical back button closes modal smoothly
@@ -344,17 +343,12 @@
         if (!modal || modal.classList.contains('hidden')) return;
 
         modal.classList.add('opacity-0');
-        const card = modal.querySelector('.transform');
-        if (card) {
-            card.classList.remove('scale-100');
-            card.classList.add('scale-95');
-        }
+        if (container) container.innerHTML = ''; // Stop video & audio playback instantly
 
         setTimeout(() => {
             modal.classList.add('hidden');
-            if (container) container.innerHTML = ''; // Stop video & audio playback instantly
             document.body.style.overflow = '';
-        }, 250);
+        }, 200);
 
         if (shouldHistoryBack && history.state && history.state.tutorialVideoOpen) {
             history.back();

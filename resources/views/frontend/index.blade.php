@@ -128,7 +128,7 @@
                         </a>
 
                         <!-- In Stock / Out of Stock Banner -->
-                        @if($prod->is_active)
+                        @if($prod->is_active && $prod->stock_count > 0)
                         <div class="absolute bottom-1.5 left-1.5 sm:bottom-3 sm:left-3 z-10 bg-emerald-600 text-white text-[8px] sm:text-[10px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-0.5 rounded shadow flex items-center gap-1">
                             <span class="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
                             <span>ইন স্টক</span>
@@ -215,7 +215,7 @@
                             <img src="{{ $prod->image_url }}" alt="{{ $prod->name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                         </a>
 
-                        @if($prod->is_active)
+                        @if($prod->is_active && $prod->stock_count > 0)
                         <div class="absolute bottom-1.5 left-1.5 sm:bottom-3 sm:left-3 z-10 bg-emerald-600 text-white text-[8px] sm:text-[10px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-0.5 rounded shadow flex items-center gap-1">
                             <span class="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
                             <span>ইন স্টক</span>
