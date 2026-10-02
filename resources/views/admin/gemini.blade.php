@@ -190,6 +190,36 @@
                     </div>
                 </div>
 
+                <!-- 4. Tutorial Video Configuration -->
+                <div class="bg-white rounded-3xl border border-slate-200/80 shadow-sm p-6 sm:p-7 space-y-4">
+                    <h3 class="font-extrabold text-sm text-slate-900 font-bn flex items-center gap-2 border-b border-slate-100 pb-3">
+                        <i class="fa-solid fa-circle-play text-rose-600 text-lg"></i>
+                        <span>অ্যাক্টিভেশন টিউটোরিয়াল ভিডিও গাইড (Tutorial Video)</span>
+                    </h3>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5 font-bn flex items-center justify-between">
+                            <span>YouTube ভিডিও লিংক অথবা HTML Embed কোড</span>
+                            <span class="text-[11px] text-brand-600 font-mono">YouTube URL / Iframe</span>
+                        </label>
+                        <textarea name="tutorial_video_url" rows="2" 
+                                  placeholder="উদাঃ https://youtu.be/xxxx অথবা https://www.youtube.com/watch?v=xxxx অথবা <iframe>...</iframe>"
+                                  class="w-full p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-mono text-slate-800 focus:bg-white focus:border-rose-500 outline-none transition">{{ $settings['tutorial_video_url'] ?? '' }}</textarea>
+                        <p class="text-[11px] text-slate-400 mt-1 font-bn">
+                            * কাস্টমারদের অর্ডার সফল হওয়ার পর স্ক্রিনে ভিডিও বাটন দেখাবে। বক্স খালি রাখলে কোনো বাটন দেখাবে না।
+                        </p>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5 font-bn">
+                            বাটন টেক্সট (Button Label)
+                        </label>
+                        <input type="text" name="tutorial_video_btn_text" 
+                               value="{{ $settings['tutorial_video_btn_text'] ?? 'ভিডিও দেখুন: ১ মিনিটে চালু করার নিয়ম' }}" 
+                               class="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bn text-slate-800 focus:bg-white focus:border-brand-500 outline-none transition">
+                    </div>
+                </div>
+
                 <!-- Save Action Button -->
                 <div class="pt-2">
                     <button type="submit" 

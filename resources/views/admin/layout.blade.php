@@ -206,9 +206,9 @@
                         <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors {{ request()->routeIs('admin.settings') ? 'bg-white/20 text-white' : 'bg-slate-800/80 text-blue-400 group-hover:bg-brand-600 group-hover:text-white' }}">
                             <i class="fa-solid fa-sliders text-xs"></i>
                         </div>
-                        <span class="font-bn text-sm">সাইট ও পিক্সেল সেটিংস</span>
+                        <span class="font-bn text-sm">ভিডিও, সাইট ও পিক্সেল সেটিংস</span>
                     </div>
-                    <span class="w-2 h-2 rounded-full bg-blue-400"></span>
+                    <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30 font-mono">Video</span>
                 </a>
 
                 <a href="{{ route('home') }}" target="_blank" 

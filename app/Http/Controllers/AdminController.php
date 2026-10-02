@@ -419,8 +419,9 @@ class AdminController extends Controller
         $availableLinks = $product->availableLinks()->count();
         $soldLinks = $product->soldLinks()->count();
         $recentLinks = $product->links()->latest()->take(10)->get();
+        $settings = Setting::pluck('value', 'key')->toArray();
 
-        return view('admin.gemini', compact('product', 'availableLinks', 'soldLinks', 'recentLinks'));
+        return view('admin.gemini', compact('product', 'availableLinks', 'soldLinks', 'recentLinks', 'settings'));
     }
 
     public function updateGemini(Request $request)
@@ -469,6 +470,14 @@ class AdminController extends Controller
             $product->features = $featuresArray;
         }
         $product->save();
+
+        // Save Tutorial Video if submitted
+        if ($request->has('tutorial_video_url')) {
+            Setting::set('tutorial_video_url', $request->input('tutorial_video_url'));
+        }
+        if ($request->has('tutorial_video_btn_text')) {
+            Setting::set('tutorial_video_btn_text', $request->input('tutorial_video_btn_text'));
+        }
 
         // Process Bulk Links if provided
         $linksAdded = 0;
