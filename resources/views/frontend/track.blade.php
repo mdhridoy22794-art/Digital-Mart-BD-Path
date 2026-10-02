@@ -176,50 +176,81 @@
     @endif
 
     @if(!empty($settings['tutorial_video_url']))
-    <!-- Tutorial Video Modal -->
+    <!-- Tutorial Video Modal (Full Screen Responsive) -->
     <div id="tutorialVideoModal" 
-         class="fixed inset-0 z-50 hidden bg-slate-950/85 backdrop-blur-md p-3 sm:p-6 flex items-center justify-center transition-opacity duration-300 opacity-0"
+         class="fixed inset-0 z-50 hidden bg-black/95 backdrop-blur-md flex flex-col justify-between transition-opacity duration-300 opacity-0"
          onclick="handleModalBackdropClick(event)">
-        <div class="relative w-full max-w-2xl bg-slate-900 border border-slate-700/80 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]"
+        <div class="relative w-full h-full sm:max-w-5xl sm:h-[92vh] sm:my-auto sm:mx-auto bg-slate-950 sm:border sm:border-slate-800 sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden"
              onclick="event.stopPropagation()">
             
             <!-- Modal Header -->
-            <div class="flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-slate-800 bg-slate-900/90">
-                <div class="flex items-center gap-2.5">
-                    <span class="w-8 h-8 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center text-sm border border-rose-500/30">
+            <div class="flex items-center justify-between px-3 sm:px-6 py-3 border-b border-slate-800 bg-slate-900/95 shrink-0">
+                <div class="flex items-center gap-2.5 min-w-0">
+                    <span class="w-8 h-8 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center text-sm border border-rose-500/30 shrink-0">
                         <i class="fa-solid fa-play ml-0.5"></i>
                     </span>
-                    <div>
-                        <h3 class="text-xs sm:text-sm font-extrabold text-white font-bn">
+                    <div class="min-w-0">
+                        <h3 class="text-xs sm:text-sm font-extrabold text-white font-bn truncate">
                             {{ $settings['tutorial_video_btn_text'] ?? 'ভিডিও গাইড: কীভাবে চালু করবেন' }}
                         </h3>
-                        <p class="text-[10px] text-slate-400 font-bn">ভিডিও দেখা শেষে ক্লোজ (✖) করে নিচে লিংক কপি করুন</p>
+                        <p class="text-[10px] text-slate-400 font-bn truncate">ভিডিও দেখার পর ক্লোজ করে লিংক কপি করুন</p>
                     </div>
                 </div>
-                <button type="button" 
-                        onclick="closeTutorialVideoModal(true)" 
-                        aria-label="Close"
-                        class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-rose-600 text-slate-300 hover:text-white flex items-center justify-center transition text-sm">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
+
+                <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                    <!-- Fullscreen Toggle Button -->
+                    <button type="button" 
+                            onclick="toggleFullScreenVideo()" 
+                            title="ফুল স্ক্রিন করুন"
+                            aria-label="Toggle Fullscreen"
+                            class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center gap-1.5 transition text-xs font-bn border border-slate-700">
+                        <i id="fsIcon" class="fa-solid fa-expand text-xs"></i>
+                        <span class="hidden sm:inline">ফুল স্ক্রিন</span>
+                    </button>
+
+                    <!-- Open in New Tab Button -->
+                    <a id="videoDirectLink" 
+                       href="#" 
+                       target="_blank" 
+                       rel="noopener noreferrer"
+                       title="নতুন ট্যাবে ভিডিওটি বড় করে দেখুন"
+                       class="px-2.5 py-1.5 rounded-xl bg-purple-600/30 hover:bg-purple-600 text-purple-200 hover:text-white flex items-center gap-1.5 transition text-xs font-bn border border-purple-500/30">
+                        <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
+                        <span class="hidden sm:inline">নতুন ট্যাবে দেখুন</span>
+                    </a>
+
+                    <!-- Close Button -->
+                    <button type="button" 
+                            onclick="closeTutorialVideoModal(true)" 
+                            aria-label="Close"
+                            class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-slate-800 hover:bg-rose-600 text-slate-300 hover:text-white flex items-center justify-center transition text-sm">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
             </div>
 
-            <!-- Video Player Box -->
-            <div class="p-2 sm:p-4 bg-black">
-                <div id="videoContainer" class="relative w-full aspect-video rounded-2xl overflow-hidden bg-black shadow-2xl" style="position: relative; width: 100%; aspect-ratio: 16 / 9; min-height: 240px; background-color: #000000;">
+            <!-- Video Player Body (Full screen flex-1, zero black letterboxing) -->
+            <div id="videoPlayerBox" class="relative flex-1 w-full h-full min-h-0 bg-black flex items-center justify-center overflow-hidden">
+                <!-- Loading Indicator -->
+                <div id="videoLoader" class="absolute inset-0 flex flex-col items-center justify-center text-center p-4 bg-black z-10 pointer-events-none transition-opacity duration-300">
+                    <div class="w-10 h-10 border-4 border-rose-500 border-t-transparent rounded-full animate-spin mb-3"></div>
+                    <p class="text-xs text-slate-300 font-bn">ভিডিও লোড হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...</p>
+                </div>
+                
+                <div id="videoContainer" class="relative w-full h-full flex items-center justify-center" style="width: 100%; height: 100%; position: relative;">
                     <!-- Injected dynamically on open -->
                 </div>
             </div>
 
             <!-- Modal Footer -->
-            <div class="px-4 sm:px-6 py-3 border-t border-slate-800 bg-slate-900/95 flex items-center justify-between gap-3">
-                <span class="text-[11px] text-slate-400 font-bn flex items-center gap-1.5">
-                    <i class="fa-solid fa-circle-check text-emerald-400"></i>
-                    <span>ভিডিও দেখে নিচের লিংকটি ব্রাউজারে চালু করুন</span>
+            <div class="px-3 sm:px-6 py-2.5 sm:py-3 border-t border-slate-800 bg-slate-900/95 flex items-center justify-between gap-2 shrink-0">
+                <span class="text-[10px] sm:text-[11px] text-slate-400 font-bn flex items-center gap-1.5 truncate">
+                    <i class="fa-solid fa-circle-check text-emerald-400 shrink-0"></i>
+                    <span class="truncate">ভিডিও দেখে নিচের লিংকটি ব্রাউজারে চালু করুন</span>
                 </span>
                 <button type="button" 
                         onclick="closeTutorialVideoModal(true)" 
-                        class="px-4 py-2 rounded-xl bg-brand-purple hover:bg-purple-600 text-white font-bold text-xs flex items-center gap-1.5 transition font-bn shadow-md shadow-purple-500/20">
+                        class="px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-brand-purple hover:bg-purple-600 text-white font-bold text-xs flex items-center gap-1.5 transition font-bn shadow-md shadow-purple-500/20 shrink-0">
                     <i class="fa-regular fa-copy"></i>
                     <span>লিংক কপি করতে ফেরত যান</span>
                 </button>
@@ -236,6 +267,14 @@
     @if(!empty($settings['tutorial_video_url']))
     const rawTutorialVideo = @json($settings['tutorial_video_url']);
 
+    function hideVideoLoader() {
+        const loader = document.getElementById('videoLoader');
+        if (loader) {
+            loader.classList.add('opacity-0');
+            setTimeout(() => { loader.style.display = 'none'; }, 300);
+        }
+    }
+
     function parseTutorialVideo(raw) {
         if (!raw) return '';
         const trimmed = raw.trim();
@@ -248,7 +287,7 @@
                 .replace(/style="[^"]*"/gi, '');
             return clean.replace(
                 /<iframe/i, 
-                '<iframe class="absolute inset-0 w-full h-full border-0" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen'
+                '<iframe onload="hideVideoLoader()" class="absolute inset-0 w-full h-full border-0" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"'
             );
         }
 
@@ -256,29 +295,73 @@
         const ytMatch = trimmed.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i);
         if (ytMatch && ytMatch[1]) {
             const videoId = ytMatch[1];
-            return `<iframe class="absolute inset-0 w-full h-full border-0" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" src="https://www.youtube.com/embed/${videoId}?autoplay=1&playsinline=1&rel=0&enablejsapi=1" title="Tutorial Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
+            return `<iframe onload="hideVideoLoader()" class="absolute inset-0 w-full h-full border-0" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" src="https://www.youtube.com/embed/${videoId}?autoplay=1&playsinline=1&rel=0&enablejsapi=1" title="Tutorial Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>`;
         }
 
         // 3. Google Drive preview support
         const gdMatch = trimmed.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/i);
         if (gdMatch && gdMatch[1]) {
             const fileId = gdMatch[1];
-            return `<iframe class="absolute inset-0 w-full h-full border-0" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" src="https://drive.google.com/file/d/${fileId}/preview" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
+            return `<iframe onload="hideVideoLoader()" class="absolute inset-0 w-full h-full border-0" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" src="https://drive.google.com/file/d/${fileId}/preview" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>`;
         }
 
         // 4. Direct HTML5 video (.mp4, .webm)
         if (/\.(mp4|webm|ogg)($|\?)/i.test(trimmed)) {
-            return `<video src="${trimmed}" class="absolute inset-0 w-full h-full object-contain" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000;" controls autoplay playsinline></video>`;
+            return `<video onloadeddata="hideVideoLoader()" oncanplay="hideVideoLoader()" src="${trimmed}" class="absolute inset-0 w-full h-full object-contain" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000;" controls autoplay playsinline allowfullscreen></video>`;
         }
 
         // 5. Generic iframe fallback
-        return `<iframe class="absolute inset-0 w-full h-full border-0" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" src="${trimmed}" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
+        return `<iframe onload="hideVideoLoader()" class="absolute inset-0 w-full h-full border-0" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" src="${trimmed}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>`;
     }
+
+    function toggleFullScreenVideo() {
+        const box = document.getElementById('videoPlayerBox') || document.getElementById('tutorialVideoModal');
+        const icon = document.getElementById('fsIcon');
+        if (!document.fullscreenElement) {
+            if (box.requestFullscreen) {
+                box.requestFullscreen().catch(() => {});
+            } else if (box.webkitRequestFullscreen) {
+                box.webkitRequestFullscreen();
+            } else if (box.msRequestFullscreen) {
+                box.msRequestFullscreen();
+            }
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen().catch(() => {});
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            }
+        }
+    }
+
+    document.addEventListener('fullscreenchange', () => {
+        const icon = document.getElementById('fsIcon');
+        if (icon) {
+            if (document.fullscreenElement) {
+                icon.classList.remove('fa-expand');
+                icon.classList.add('fa-compress');
+            } else {
+                icon.classList.remove('fa-compress');
+                icon.classList.add('fa-expand');
+            }
+        }
+    });
 
     function openTutorialVideoModal() {
         const modal = document.getElementById('tutorialVideoModal');
         const container = document.getElementById('videoContainer');
+        const loader = document.getElementById('videoLoader');
+        const directLink = document.getElementById('videoDirectLink');
         if (!modal || !container) return;
+
+        if (directLink && rawTutorialVideo) {
+            directLink.href = rawTutorialVideo;
+        }
+
+        if (loader) {
+            loader.style.display = 'flex';
+            loader.classList.remove('opacity-0');
+        }
 
         modal.classList.remove('hidden');
         requestAnimationFrame(() => {
@@ -294,6 +377,10 @@
         const modal = document.getElementById('tutorialVideoModal');
         const container = document.getElementById('videoContainer');
         if (!modal || modal.classList.contains('hidden')) return;
+
+        if (document.fullscreenElement) {
+            try { document.exitFullscreen(); } catch (e) {}
+        }
 
         modal.classList.add('opacity-0');
         if (container) container.innerHTML = '';
