@@ -253,6 +253,13 @@
             return `<iframe class="w-full h-full border-0" src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1" title="Tutorial Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
         }
 
+        // Google Drive preview support
+        const gdMatch = trimmed.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/i);
+        if (gdMatch && gdMatch[1]) {
+            const fileId = gdMatch[1];
+            return `<iframe class="w-full h-full border-0" src="https://drive.google.com/file/d/${fileId}/preview" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
+        }
+
         if (/\.(mp4|webm|ogg)($|\?)/i.test(trimmed)) {
             return `<video src="${trimmed}" class="w-full h-full object-contain" controls autoplay playsinline></video>`;
         }
