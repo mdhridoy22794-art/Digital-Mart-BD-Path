@@ -56,8 +56,13 @@ class Product extends Model
 
     public function getImageUrlAttribute()
     {
-        if (!empty($this->image_path) && file_exists(public_path($this->image_path))) {
-            return asset($this->image_path);
+        if (!empty($this->image_path)) {
+            if (str_starts_with($this->image_path, 'data:') || str_starts_with($this->image_path, 'http')) {
+                return $this->image_path;
+            }
+            if (file_exists(public_path($this->image_path))) {
+                return asset($this->image_path);
+            }
         }
 
         if (str_contains($this->slug, 'gemini')) {

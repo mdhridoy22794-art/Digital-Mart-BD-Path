@@ -271,9 +271,9 @@ class AdminController extends Controller
         $imagePath = null;
         if ($request->hasFile('image')) {
             $imageFile = $request->file('image');
-            $imageName = 'prod_' . time() . '_' . Str::random(5) . '.' . $imageFile->getClientOriginalExtension();
-            $imageFile->move(public_path('images/products'), $imageName);
-            $imagePath = 'images/products/' . $imageName;
+            $mimeType = $imageFile->getMimeType();
+            $imageData = base64_encode(file_get_contents($imageFile->getRealPath()));
+            $imagePath = 'data:' . $mimeType . ';base64,' . $imageData;
         }
 
         $slug = $request->filled('slug') ? Str::slug($request->input('slug')) : Str::slug($request->input('name'));
@@ -348,9 +348,9 @@ class AdminController extends Controller
 
         if ($request->hasFile('image')) {
             $imageFile = $request->file('image');
-            $imageName = 'prod_' . time() . '_' . Str::random(5) . '.' . $imageFile->getClientOriginalExtension();
-            $imageFile->move(public_path('images/products'), $imageName);
-            $product->image_path = 'images/products/' . $imageName;
+            $mimeType = $imageFile->getMimeType();
+            $imageData = base64_encode(file_get_contents($imageFile->getRealPath()));
+            $product->image_path = 'data:' . $mimeType . ';base64,' . $imageData;
         }
 
         $product->name = $request->input('name');
@@ -454,9 +454,9 @@ class AdminController extends Controller
         // Process Image Upload
         if ($request->hasFile('image')) {
             $imageFile = $request->file('image');
-            $imageName = 'gemini_' . time() . '.' . $imageFile->getClientOriginalExtension();
-            $imageFile->move(public_path('images/products'), $imageName);
-            $product->image_path = 'images/products/' . $imageName;
+            $mimeType = $imageFile->getMimeType();
+            $imageData = base64_encode(file_get_contents($imageFile->getRealPath()));
+            $product->image_path = 'data:' . $mimeType . ';base64,' . $imageData;
         }
 
         $product->name = $request->input('name');
