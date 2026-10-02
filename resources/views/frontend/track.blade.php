@@ -136,6 +136,27 @@
                         </button>
                     </div>
                     @endif
+
+                    <!-- Canva & CapCut Notice in Track -->
+                    <div class="mt-3 p-3 rounded-xl bg-purple-950/70 border border-purple-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-left">
+                        <div class="flex items-start gap-2 min-w-0">
+                            <i class="fa-brands fa-whatsapp text-emerald-400 text-sm mt-0.5 shrink-0"></i>
+                            <div>
+                                <p class="text-xs font-bold text-purple-200 font-bn">
+                                    ক্যানভা (Canva Pro) ও ক্যাপকাট (CapCut Pro) গ্রাহকদের জন্য:
+                                </p>
+                                <p class="text-[11px] text-purple-300/80 font-bn leading-normal mt-0.5">
+                                    এক্টিভেশনের জন্য অনুগ্রহ করে আমাদের অফিসিয়াল হোয়াটসঅ্যাপে অর্ডার নম্বর পাঠিয়ে মেসেজ দিন।
+                                </p>
+                            </div>
+                        </div>
+                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $settings['whatsapp_number'] ?? '8801934779775') }}?text={{ urlencode('হ্যালো! আমি ক্যানভা/ক্যাপকাট এক্টিভেশনের জন্য মেসেজ দিচ্ছি। আমার অর্ডার #' . ($order->order_number ?? '')) }}" 
+                           target="_blank" 
+                           class="shrink-0 self-start sm:self-center px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] flex items-center gap-1.5 font-bn shadow-sm transition">
+                            <i class="fa-brands fa-whatsapp text-xs"></i>
+                            <span>মেসেজ দিন</span>
+                        </a>
+                    </div>
                 </div>
                 @endif
             </div>

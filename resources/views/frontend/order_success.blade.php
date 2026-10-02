@@ -193,6 +193,29 @@
                     <li>গুগল ওয়ান (Google One) পেজ লোড হলে নিচে <strong>"Activate plan"</strong> বাটনে ট্যাপ করুন।</li>
                     <li>ব্যাস! সাথে সাথেই আপনার জিমেইল অ্যাকাউন্টে জেমিনাই প্রো ও ৫টিবি স্টোরেজ সক্রিয় হয়ে যাবে।</li>
                 </ol>
+
+                <!-- Special notice for Canva & CapCut -->
+                <div class="mt-4 pt-3.5 border-t border-purple-200/90 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white/90 p-3.5 rounded-xl border border-purple-100 shadow-sm">
+                    <div class="flex items-start gap-2.5 min-w-0">
+                        <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5 sm:mt-0 text-base shadow-sm">
+                            <i class="fa-brands fa-whatsapp"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-slate-800 font-bn">
+                                ক্যানভা প্রো (Canva Pro) ও ক্যাপকাট (CapCut Pro) গ্রাহকদের জন্য:
+                            </p>
+                            <p class="text-[11px] text-slate-600 font-bn leading-normal mt-0.5">
+                                আপনি যদি ক্যানভা বা ক্যাপকাট অর্ডার করে থাকেন, তবে দ্রুত সার্ভিস একটিভেশনের জন্য অনুগ্রহ করে আমাদের হোয়াটসঅ্যাপে মেসেজ দিন।
+                            </p>
+                        </div>
+                    </div>
+                    <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $settings['whatsapp_number'] ?? '8801934779775') }}?text={{ urlencode('হ্যালো! আমি ক্যানভা/ক্যাপকাট এক্টিভেশনের জন্য মেসেজ দিচ্ছি। আমার অর্ডার #' . ($order->order_number ?? '')) }}" 
+                       target="_blank" 
+                       class="shrink-0 self-start sm:self-center px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1.5 font-bn shadow-sm transition active:scale-95">
+                        <i class="fa-brands fa-whatsapp text-sm"></i>
+                        <span>হোয়াটসঅ্যাপে মেসেজ দিন</span>
+                    </a>
+                </div>
             </div>
 
             <!-- Action Buttons -->

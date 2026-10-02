@@ -203,7 +203,7 @@
                         <i class="fa-solid fa-bullhorn text-amber-500"></i>
                         <span>টপ অ্যানাউন্সমেন্ট বার টেক্সট</span>
                     </label>
-                    <input type="text" name="announcement_text" value="{{ $settings['announcement_text'] ?? '⚡ মেগা অফার: মাত্র ২০০ টাকায় ১৮ মাসের গুগল জেমিনাই এআই প্রো! অফারটি সীমিত সময়ের জন্য।' }}" 
+                    <input type="text" name="announcement_text" value="{{ $settings['announcement_text'] ?? '⚡ মেগা অফার: মাত্র ২৫০ টাকায় ১৮ মাসের গুগল জেমিনাই এআই প্রো! অফারটি সীমিত সময়ের জন্য।' }}" 
                            class="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200/90 text-xs sm:text-sm text-slate-800 focus:bg-white focus:border-brand-500 focus:ring-2 focus:ring-purple-500/20 outline-none transition font-bn">
                 </div>
 

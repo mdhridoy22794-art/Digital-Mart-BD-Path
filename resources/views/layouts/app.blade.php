@@ -13,7 +13,7 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:title" content="{{ $settings['site_title'] ?? 'Digital Mart BD' }}">
-    <meta property="og:description" content="গুগল জেমিনাই প্রো ১৮ মাস মাত্র ২০০ টাকায়! ১ সেকেন্ডে ইনস্ট্যান্ট ডেলিভারি।">
+    <meta property="og:description" content="গুগল জেমিনাই প্রো ১৮ মাস মাত্র ২৫০ টাকায়! ১ সেকেন্ডে ইনস্ট্যান্ট ডেলিভারি।">
     <meta property="og:image" content="{{ asset('images/logo.jpg') }}">
 
     <!-- Favicon -->
@@ -224,7 +224,7 @@
                     <!-- Cart Badge Button -->
                     <a href="{{ route('product.details', 'gemini-pro-18m') }}" class="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl gradient-brand text-white shadow-sm shadow-purple-500/20 btn-shine transition transform hover:scale-105" title="কার্ট / অর্ডার">
                         <i class="fa-solid fa-cart-shopping text-xs"></i>
-                        <span class="text-xs font-bold font-en">৳200</span>
+                        <span class="text-xs font-bold font-en">৳{{ number_format(\App\Models\Product::where('slug', 'gemini-pro-18m')->value('offer_price') ?? 250, 0) }}</span>
                     </a>
 
                     <!-- Mobile Drawer Menu Toggle Button (হাতের ডান দিকে) -->

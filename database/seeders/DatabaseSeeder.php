@@ -28,7 +28,7 @@ class DatabaseSeeder extends Seeder
         // 2. Default Settings (preserve existing settings)
         $settings = [
             'site_title' => 'Digital Mart BD - সর্ববৃহৎ ডিজিটাল সাবস্ক্রিপশন ও সফটওয়্যার স্টোর',
-            'announcement_text' => '🔥 মেগা সেল চলছে! গুগল জেমিনাই প্রো ১৮ মাস মাত্র ২০০ টাকায়! পেমেন্ট করলেই ১ সেকেন্ডে ইনস্ট্যান্ট লিংক ডেলিভারি!',
+            'announcement_text' => '🔥 মেগা সেল চলছে! গুগল জেমিনাই প্রো ১৮ মাস মাত্র ২৫০ টাকায়! পেমেন্ট করলেই ১ সেকেন্ডে ইনস্ট্যান্ট লিংক ডেলিভারি!',
             'bkash_number' => '01322765651',
             'nagad_number' => '01322765651',
             'whatsapp_number' => '+8801322765651',
@@ -50,7 +50,7 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Gemini AI Pro 18 Months (গুগল জেমিনাই প্রো)',
                 'subtitle' => 'Google One AI Pro 18M with 5TB Storage & Veo3 Credits',
                 'regular_price' => 400.00,
-                'offer_price' => 200.00,
+                'offer_price' => 250.00,
                 'badge' => 'SAVE 50%',
                 'description' => 'গুগল জেমিনাই প্রো ১৮ মাসের সম্পূর্ণ ওনার অ্যাকাউন্ট। আপনি আপনার পার্সোনাল জিমেইল অ্যাকাউন্টে অ্যাক্টিভ করতে পারবেন এবং সাথে ৫ জন ফ্যামিলি মেম্বার যুক্ত করে ৫টিবি গুগল ক্লাউড স্টোরেজ শেয়ার করার দারুণ সুবিধা পাবেন। সাথে থাকছে Flow/Veo3 প্রতি মাসে ১,০০০ ক্রেডিট। এটি সম্পূর্ণ অটোমেটিক ডেলিভারি সিস্টেম—পেমেন্ট করার সাথে সাথেই স্ক্রিনে নতুন ইউনিক লিংক চলে আসবে।',
                 'features' => [
