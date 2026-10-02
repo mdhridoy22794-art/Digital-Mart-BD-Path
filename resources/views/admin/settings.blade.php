@@ -170,7 +170,7 @@
                         <i class="fa-brands fa-whatsapp text-emerald-500"></i>
                         <span>হোয়াটসঅ্যাপ হেল্পলাইন নম্বর</span>
                     </label>
-                    <input type="text" name="whatsapp_number" value="{{ $settings['whatsapp_number'] ?? '+8801322765651' }}" required
+                    <input type="text" name="whatsapp_number" value="{{ $settings['whatsapp_number'] ?? '+880 1934-779775' }}" required
                            class="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200/90 text-xs sm:text-sm font-mono text-slate-800 focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition">
                 </div>
 

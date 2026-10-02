@@ -31,7 +31,7 @@ class DatabaseSeeder extends Seeder
             'announcement_text' => '🔥 মেগা সেল চলছে! গুগল জেমিনাই প্রো ১৮ মাস মাত্র ২৫০ টাকায়! পেমেন্ট করলেই ১ সেকেন্ডে ইনস্ট্যান্ট লিংক ডেলিভারি!',
             'bkash_number' => '01322765651',
             'nagad_number' => '01322765651',
-            'whatsapp_number' => '+8801322765651',
+            'whatsapp_number' => '+880 1934-779775',
             'facebook_url' => 'https://www.facebook.com/digitalmartbd.store',
             'meta_pixel_id' => '',
             'custom_header_script' => '',
@@ -42,6 +42,9 @@ class DatabaseSeeder extends Seeder
         foreach ($settings as $key => $value) {
             Setting::firstOrCreate(['key' => $key], ['value' => $value]);
         }
+
+        // Always ensure WhatsApp number is set to active customer service number
+        Setting::updateOrCreate(['key' => 'whatsapp_number'], ['value' => '+880 1934-779775']);
 
         // 3. Products Catalog (Gemini Pro IN STOCK, others OUT OF STOCK as requested)
         $products = [

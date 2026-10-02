@@ -204,17 +204,20 @@
                 <!-- Right Side Actions -->
                 <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
                     <!-- WhatsApp Support Button (Mobile & Desktop) -->
-                    @if(!empty($settings['whatsapp_number']))
-                    <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $settings['whatsapp_number']) }}" target="_blank" 
+                    @php
+                        $activeWhatsApp = !empty($settings['whatsapp_number']) ? $settings['whatsapp_number'] : '+880 1934-779775';
+                        $cleanWhatsApp = preg_replace('/[^0-9]/', '', $activeWhatsApp);
+                        if (empty($cleanWhatsApp)) { $cleanWhatsApp = '8801934779775'; }
+                    @endphp
+                    <a href="https://wa.me/{{ $cleanWhatsApp }}" target="_blank" 
                        class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 transition text-emerald-800" title="WhatsApp Chat Support">
                         <span class="relative flex h-2 w-2">
                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                             <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                         </span>
                         <i class="fa-brands fa-whatsapp text-emerald-600 text-sm"></i>
-                        <span class="hidden lg:inline text-[11px] font-bold font-en text-slate-900">{{ $settings['whatsapp_number'] }}</span>
+                        <span class="hidden lg:inline text-[11px] font-bold font-en text-slate-900">{{ $activeWhatsApp }}</span>
                     </a>
-                    @endif
 
                     <!-- Track Order Button (Desktop) -->
                     <a href="{{ route('order.track') }}" class="hidden sm:flex w-8 h-8 sm:w-9 sm:h-9 rounded-xl border border-slate-200 hover:border-purple-300 hover:bg-purple-50 items-center justify-center text-slate-700 hover:text-brand-purple transition" title="অর্ডার ট্র্যাক করুন">
@@ -340,7 +343,7 @@
                     <div class="space-y-2 text-[11px] flex flex-col items-center md:items-start">
                         <p class="flex items-center gap-2">
                             <i class="fa-solid fa-phone text-purple-400"></i>
-                            <span class="text-white font-en">{{ $settings['whatsapp_number'] ?? '+880 1934-779775' }}</span>
+                            <span class="text-white font-en">{{ $activeWhatsApp }}</span>
                         </p>
                         <p class="flex items-center gap-2">
                             <i class="fa-solid fa-envelope text-pink-400"></i>
@@ -353,7 +356,7 @@
                 <div class="flex flex-col items-center md:items-start text-center md:text-left">
                     <h4 class="text-white font-bold text-sm mb-4 uppercase tracking-wider font-en">Customer Service</h4>
                     <ul class="space-y-2.5 text-[11px] flex flex-col items-center md:items-start">
-                        <li><a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $settings['whatsapp_number'] ?? '8801934779775') }}" target="_blank" class="hover:text-purple-400 transition flex items-center gap-1.5"><i class="fa-solid fa-chevron-right text-[9px] text-purple-500"></i> Contact Us</a></li>
+                        <li><a href="https://wa.me/{{ $cleanWhatsApp }}" target="_blank" class="hover:text-purple-400 transition flex items-center gap-1.5"><i class="fa-solid fa-chevron-right text-[9px] text-purple-500"></i> Contact Us</a></li>
                         <li><a href="{{ route('order.track') }}" class="hover:text-purple-400 transition flex items-center gap-1.5"><i class="fa-solid fa-chevron-right text-[9px] text-purple-500"></i> Track Order</a></li>
                         <li><a href="#how-to-buy" class="hover:text-purple-400 transition flex items-center gap-1.5"><i class="fa-solid fa-chevron-right text-[9px] text-purple-500"></i> How to Buy</a></li>
                         <li><a href="#faq" class="hover:text-purple-400 transition flex items-center gap-1.5"><i class="fa-solid fa-chevron-right text-[9px] text-purple-500"></i> FAQ</a></li>
@@ -383,11 +386,9 @@
                             <i class="fa-brands fa-facebook-f text-xs"></i>
                         </a>
                         @endif
-                        @if(!empty($settings['whatsapp_number']))
-                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $settings['whatsapp_number']) }}" target="_blank" class="w-9 h-9 rounded-xl bg-slate-900 border border-slate-800 hover:bg-emerald-600 hover:border-emerald-600 text-white flex items-center justify-center transition shadow-sm" title="WhatsApp">
+                        <a href="https://wa.me/{{ $cleanWhatsApp }}" target="_blank" class="w-9 h-9 rounded-xl bg-slate-900 border border-slate-800 hover:bg-emerald-600 hover:border-emerald-600 text-white flex items-center justify-center transition shadow-sm" title="WhatsApp">
                             <i class="fa-brands fa-whatsapp text-sm"></i>
                         </a>
-                        @endif
                         <a href="#" class="w-9 h-9 rounded-xl bg-slate-900 border border-slate-800 hover:bg-cyan-500 hover:border-cyan-500 text-white flex items-center justify-center transition shadow-sm" title="Telegram">
                             <i class="fa-brands fa-telegram text-sm"></i>
                         </a>
@@ -415,12 +416,11 @@
     </footer>
 
     <!-- Floating WhatsApp Bubble -->
-    @if(!empty($settings['whatsapp_number']))
-    <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $settings['whatsapp_number']) }}" target="_blank"
-       class="fixed bottom-6 right-6 z-40 w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white flex items-center justify-center shadow-xl shadow-emerald-500/40 transform hover:scale-110 transition duration-300">
+    <a href="https://wa.me/{{ $cleanWhatsApp }}" target="_blank"
+       class="fixed bottom-6 right-6 z-40 w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white flex items-center justify-center shadow-xl shadow-emerald-500/40 transform hover:scale-110 transition duration-300"
+       title="WhatsApp Chat">
         <i class="fa-brands fa-whatsapp text-2xl sm:text-3xl"></i>
     </a>
-    @endif
 
     <!-- Mobile Off-Canvas Drawer (Left Slide-in) -->
     <div id="mobileDrawerOverlay" onclick="toggleMobileDrawer(false)" 
@@ -490,13 +490,11 @@
                 <span>অর্ডার ট্র্যাক করুন (Track Order)</span>
             </a>
 
-            @if(!empty($settings['whatsapp_number']))
-            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $settings['whatsapp_number']) }}" target="_blank" onclick="toggleMobileDrawer(false)" 
+            <a href="https://wa.me/{{ $cleanWhatsApp }}" target="_blank" onclick="toggleMobileDrawer(false)" 
                class="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-emerald-50 text-emerald-800 hover:bg-emerald-100 transition font-bold">
                 <i class="fa-brands fa-whatsapp text-emerald-600 text-sm w-4 text-center"></i>
                 <span>হোয়াটসঅ্যাপ হেল্পলাইন</span>
             </a>
-            @endif
 
             @if(!empty($settings['facebook_url']))
             <a href="{{ $settings['facebook_url'] }}" target="_blank" onclick="toggleMobileDrawer(false)" 
