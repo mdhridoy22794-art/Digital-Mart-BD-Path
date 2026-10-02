@@ -522,53 +522,10 @@
         defaultText.classList.add('hidden');
         loadingText.classList.remove('hidden');
 
-        // IF ZINIPAY AUTO GATEWAY IS SELECTED
-        if (currentPaymentMethod === 'zinipay') {
-            if (loadingStatusText) loadingStatusText.innerText = 'পেমেন্ট গেটওয়েতে নেওয়া হচ্ছে...';
-
-            try {
-                const response = await fetch("{{ route('payment.zinipay.init') }}", {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json'
-                    },
-                    body: formData
-                });
-
-                const data = await response.json();
-
-                if (response.ok && data.success && data.payment_url) {
-                    if (typeof fbq === 'function') {
-                        fbq('track', 'InitiateCheckout', {
-                            content_name: "{{ $product->name }}",
-                            value: currentQty * unitPrice,
-                            currency: 'BDT'
-                        });
-                    }
-                    window.location.href = data.payment_url;
-                    return;
-                } else {
-                    errorMessage.innerText = data.message || 'পেমেন্ট গেটওয়ে তৈরিতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।';
-                    errorBox.classList.remove('hidden');
-                    submitBtn.disabled = false;
-                    defaultText.classList.remove('hidden');
-                    loadingText.classList.add('hidden');
-                }
-            } catch (err) {
-                errorMessage.innerText = 'সার্ভারে সংযোগে সমস্যা হয়েছে। অনুগ্রহ করে ইন্টারনেট চেক করুন।';
-                errorBox.classList.remove('hidden');
-                submitBtn.disabled = false;
-                defaultText.classList.remove('hidden');
-                loadingText.classList.add('hidden');
-            }
-            return;
-        }
-
-        // IF MANUAL SEND MONEY (bKash/Nagad) IS SELECTED
-        if (loadingStatusText) loadingStatusText.innerText = 'যাচাই করা হচ্ছে...';
+        if (loadingStatusText) loadingStatusText.innerText = 'পেমেন্ট গেটওয়েতে নেওয়া হচ্ছে...';
 
         try {
-            const response = await fetch("{{ route('order.process') }}", {
+            const response = await fetch("{{ route('payment.zinipay.init') }}", {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json'
@@ -578,58 +535,18 @@
 
             const data = await response.json();
 
-            if (response.ok && data.success) {
-                document.getElementById('checkoutFormSection').classList.add('hidden');
-                document.getElementById('deliverySuccessSection').classList.remove('hidden');
-
-                document.getElementById('deliveredOrderNumber').innerText = data.order_number;
-                document.getElementById('deliveredQtyCount').innerText = data.quantity || 1;
-
-                storedAllLinksText = data.delivered_link || "";
-
-                // Render Serial Links
-                const linksContainer = document.getElementById('deliveredLinksList');
-                linksContainer.innerHTML = "";
-
-                const linksList = data.delivered_links && data.delivered_links.length > 0
-                    ? data.delivered_links
-                    : [{ serial: 1, url: data.delivered_link }];
-
-                linksList.forEach((item) => {
-                    const card = document.createElement('div');
-                    card.className = "p-3.5 rounded-2xl bg-slate-900 text-left border border-slate-800 shadow-sm space-y-2";
-                    card.innerHTML = `
-                        <div class="flex items-center justify-between text-xs text-emerald-400 font-semibold">
-                            <span class="flex items-center gap-1.5 font-bn">
-                                <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-mono text-[10px] font-bold">#${item.serial}</span>
-                                <span>অ্যাক্টিভেশন লিংক #${item.serial}:</span>
-                            </span>
-                            <a href="${item.url}" target="_blank" class="text-[11px] text-purple-300 hover:text-white flex items-center gap-1 transition">
-                                <span>ওপেন করুন</span>
-                                <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
-                            </a>
-                        </div>
-                        <div class="p-2.5 rounded-xl bg-slate-950 font-mono text-[11px] text-purple-200 select-all break-all border border-slate-800/80">
-                            ${item.url}
-                        </div>
-                        <button type="button" onclick="copySingleLink('${item.url.replace(/'/g, "\\'")}', this)" 
-                                class="w-full py-2 px-3 rounded-xl bg-purple-600/30 hover:bg-brand-purple text-purple-200 hover:text-white border border-purple-500/30 text-xs font-semibold flex items-center justify-center gap-1.5 transition">
-                            <i class="fa-regular fa-copy"></i>
-                            <span>এই লিংকটি কপি করুন</span>
-                        </button>
-                    `;
-                    linksContainer.appendChild(card);
-                });
-
+            if (response.ok && data.success && data.payment_url) {
                 if (typeof fbq === 'function') {
-                    fbq('track', 'Purchase', {
+                    fbq('track', 'InitiateCheckout', {
                         content_name: "{{ $product->name }}",
-                        value: parseFloat(data.amount),
+                        value: currentQty * unitPrice,
                         currency: 'BDT'
                     });
                 }
+                window.location.href = data.payment_url;
+                return;
             } else {
-                errorMessage.innerText = data.message || 'অর্ডারে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।';
+                errorMessage.innerText = data.message || 'পেমেন্ট গেটওয়ে তৈরিতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।';
                 errorBox.classList.remove('hidden');
             }
         } catch (err) {
@@ -641,6 +558,7 @@
             loadingText.classList.add('hidden');
         }
     }
+
 
     function copySingleLink(url, btn) {
         navigator.clipboard.writeText(url).then(() => {

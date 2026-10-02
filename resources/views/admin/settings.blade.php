@@ -133,7 +133,7 @@
                             <span>ZiniPay Brand Key / API Key *</span>
                             <span class="text-[11px] text-brand-600 font-normal">dash.zinipay.com থেকে প্রাপ্ত</span>
                         </label>
-                        <input type="text" name="zinipay_api_key" value="{{ $settings['zinipay_api_key'] ?? '4e16b90fb1c397d0b5a4c4f32deab4349dad06172d2683fa' }}" required
+                        <input type="text" name="zinipay_api_key" value="{{ $settings['zinipay_api_key'] ?? config('services.zinipay.api_key', '') }}" required
                                placeholder="আপনার ZiniPay Brand Key এখানে দিন"
                                class="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200/90 text-xs sm:text-sm font-mono text-slate-800 focus:bg-white focus:border-brand-500 focus:ring-2 focus:ring-purple-500/10 outline-none transition">
                     </div>

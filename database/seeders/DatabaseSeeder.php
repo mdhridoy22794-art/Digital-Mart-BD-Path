@@ -16,8 +16,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Admin User
-        User::updateOrCreate(
+        // 1. Admin User (create only if not already existing)
+        User::firstOrCreate(
             ['email' => 'admin@digitalmartbd.com'],
             [
                 'name' => 'Digital Mart BD Admin',
@@ -25,7 +25,7 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        // 2. Default Settings
+        // 2. Default Settings (preserve existing settings)
         $settings = [
             'site_title' => 'Digital Mart BD - সর্ববৃহৎ ডিজিটাল সাবস্ক্রিপশন ও সফটওয়্যার স্টোর',
             'announcement_text' => '🔥 মেগা সেল চলছে! গুগল জেমিনাই প্রো ১৮ মাস মাত্র ২০০ টাকায়! পেমেন্ট করলেই ১ সেকেন্ডে ইনস্ট্যান্ট লিংক ডেলিভারি!',
@@ -35,12 +35,12 @@ class DatabaseSeeder extends Seeder
             'facebook_url' => 'https://www.facebook.com/digitalmartbd.store',
             'meta_pixel_id' => '',
             'custom_header_script' => '',
-            'zinipay_api_key' => '4e16b90fb1c397d0b5a4c4f32deab4349dad06172d2683fa',
+            'zinipay_api_key' => env('ZINIPAY_API_KEY', '4e16b90fb1c397d0b5a4c4f32deab4349dad06172d2683fa'),
             'zinipay_status' => 'active',
         ];
 
         foreach ($settings as $key => $value) {
-            Setting::updateOrCreate(['key' => $key], ['value' => $value]);
+            Setting::firstOrCreate(['key' => $key], ['value' => $value]);
         }
 
         // 3. Products Catalog (Gemini Pro IN STOCK, others OUT OF STOCK as requested)
@@ -180,7 +180,7 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($products as $pData) {
-            Product::updateOrCreate(['slug' => $pData['slug']], $pData);
+            Product::firstOrCreate(['slug' => $pData['slug']], $pData);
         }
 
         // 4. Ensure demo available links exist only on initial fresh setup

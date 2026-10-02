@@ -8,7 +8,6 @@ use App\Http\Controllers\ZiniPayController;
 // --- Frontend Public Routes ---
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/product/{slug}', [HomeController::class, 'productDetails'])->name('product.details');
-Route::post('/order/process', [HomeController::class, 'processOrder'])->name('order.process');
 Route::get('/order/{order_number}/success', [HomeController::class, 'orderSuccess'])->name('order.success');
 Route::get('/track', [HomeController::class, 'trackOrder'])->name('order.track');
 

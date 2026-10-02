@@ -20,3 +20,5 @@ yarn-error.log
 *credentials*
 *secret*
 *DO_NOT_PUBLISH*
+check_supabase.php
+test_stock.php

@@ -14,6 +14,6 @@ services:
       - key: APP_KEY
         value: base64:fwDn21eRguVyadRJ+ub0BVHHmjyk8TpbZxcVTmAoqYQ=
       - key: DB_CONNECTION
-        value: sqlite
+        value: pgsql
       - key: SESSION_DRIVER
-        value: database
+        value: file

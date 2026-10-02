@@ -13,7 +13,6 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->trustProxies(at: '*');
         $middleware->validateCsrfTokens(except: [
-            'order/process',
             'payment/zinipay/init',
             'payment/zinipay/callback',
             'payment/zinipay/webhook',

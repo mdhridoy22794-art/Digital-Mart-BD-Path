@@ -15,7 +15,7 @@ class ZiniPayService
     {
         $this->baseUrl = 'https://api.zinipay.com';
         $this->apiKey = Setting::get('zinipay_api_key') 
-            ?: config('services.zinipay.api_key', env('ZINIPAY_API_KEY', '4e16b90fb1c397d0b5a4c4f32deab4349dad06172d2683fa'));
+            ?: (string) config('services.zinipay.api_key', env('ZINIPAY_API_KEY', ''));
     }
 
     /**
