@@ -231,8 +231,8 @@
                         <i class="fa-solid fa-truck-fast text-xs sm:text-sm"></i>
                     </a>
 
-                    <!-- Cart Badge Button -->
-                    <a href="{{ route('product.details', 'gemini-pro-18m') }}" class="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl gradient-brand text-white shadow-sm shadow-purple-500/20 btn-shine transition transform hover:scale-105" title="কার্ট / অর্ডার">
+                    <!-- Cart / Shop Badge Button -->
+                    <a href="{{ route('home') }}#trending-section" class="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl gradient-brand text-white shadow-sm shadow-purple-500/20 btn-shine transition transform hover:scale-105" title="শপ / প্রোডাক্ট">
                         <i class="fa-solid fa-cart-shopping text-xs"></i>
                         <span class="text-xs font-bold font-en">৳{{ number_format(\App\Models\Product::where('slug', 'gemini-pro-18m')->value('offer_price') ?? 250, 0) }}</span>
                     </a>

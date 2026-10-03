@@ -5,7 +5,7 @@
 
     <!-- ================= 1. RESPONSIVE HERO BANNER ================= -->
     <div class="relative w-full rounded-xl sm:rounded-3xl overflow-hidden shadow-lg sm:shadow-xl border border-purple-500/20 bg-slate-950 group">
-        <a href="{{ route('product.details', 'gemini-pro-18m') }}" class="block relative w-full overflow-hidden cursor-pointer">
+        <a href="#trending-section" class="block relative w-full overflow-hidden cursor-pointer">
             <img src="{{ asset('images/banner_hero.jpg') }}" 
                  alt="Digital Mart BD - All Digital Solutions" 
                  class="w-full h-auto max-h-[360px] sm:max-h-[460px] object-cover sm:object-contain md:object-cover mx-auto transform group-hover:scale-[1.01] transition-transform duration-500">
@@ -39,7 +39,7 @@
     <!-- ================= 2. CATEGORY ICONS / CARDS ================= -->
     <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-4">
         <!-- 1. AI Tools -->
-        <a href="{{ route('product.details', 'gemini-pro-18m') }}" class="scale-hover p-2.5 sm:p-4 rounded-xl sm:rounded-2xl bg-white border border-purple-200 shadow-sm flex flex-col items-center text-center group btn-press">
+        <a href="#trending-section" class="scale-hover p-2.5 sm:p-4 rounded-xl sm:rounded-2xl bg-white border border-purple-200 shadow-sm flex flex-col items-center text-center group btn-press">
             <div class="w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-purple-50 text-brand-purple flex items-center justify-center text-lg sm:text-2xl mb-1.5 sm:mb-2 group-hover:bg-brand-purple group-hover:text-white transition duration-300 shadow-inner">
                 <i class="fa-solid fa-wand-magic-sparkles"></i>
             </div>
