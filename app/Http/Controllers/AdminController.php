@@ -214,6 +214,30 @@ class AdminController extends Controller
     {
         $data = $request->except(['_token', 'regular_price', 'offer_price']);
 
+        // Sanitize Meta Pixel ID to keep only valid numeric IDs
+        if (isset($data['meta_pixel_id'])) {
+            $rawPids = preg_split('/[,;\r\n]+/', (string)$data['meta_pixel_id']);
+            $validPids = [];
+            foreach ($rawPids as $p) {
+                $cleaned = preg_replace('/[^0-9]/', '', trim($p));
+                if (!empty($cleaned)) {
+                    $validPids[] = $cleaned;
+                }
+            }
+            $data['meta_pixel_id'] = implode(', ', $validPids);
+        }
+
+        // Sanitize Custom Header Scripts: Prevent raw tokens/strings from leaking into HTML
+        if (isset($data['custom_header_script'])) {
+            $script = trim((string)$data['custom_header_script']);
+            if (!empty($script) && !str_contains($script, '<')) {
+                if (str_starts_with($script, 'EAA')) {
+                    Setting::set('meta_access_token', $script);
+                }
+                $data['custom_header_script'] = '';
+            }
+        }
+
         foreach ($data as $key => $value) {
             Setting::set($key, $value);
         }

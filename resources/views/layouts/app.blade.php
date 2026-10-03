@@ -133,7 +133,9 @@
     <!-- Meta Pixel Code (Supports single or multiple Pixel IDs separated by commas or newlines) -->
     @php
         $rawPixelIds = $settings['meta_pixel_id'] ?? '';
-        $pixelIds = array_values(array_filter(array_map('trim', preg_split('/[,;\r\n]+/', (string)$rawPixelIds))));
+        $pixelIds = array_values(array_filter(array_map('trim', preg_split('/[,;\r\n]+/', (string)$rawPixelIds)), function($id) {
+            return preg_match('/^\d+$/', $id);
+        }));
     @endphp
     @if(count($pixelIds) > 0)
     <script>
@@ -159,7 +161,12 @@
     @endif
 
     @if(!empty($settings['custom_header_script']))
-        {!! $settings['custom_header_script'] !!}
+        @php
+            $rawHeaderScript = trim((string)$settings['custom_header_script']);
+        @endphp
+        @if(str_contains($rawHeaderScript, '<'))
+            {!! $rawHeaderScript !!}
+        @endif
     @endif
 </head>
 <body class="min-h-screen flex flex-col antialiased bg-slate-50 text-slate-800">

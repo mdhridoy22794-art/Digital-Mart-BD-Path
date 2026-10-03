@@ -580,5 +580,18 @@
             }, 2500);
         });
     }
+
+    // Meta Pixel ViewContent event
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof fbq === 'function') {
+            fbq('track', 'ViewContent', {
+                content_name: "{{ $product->name }}",
+                content_ids: ["{{ $product->id }}"],
+                content_type: 'product',
+                value: {{ (float) $product->offer_price }},
+                currency: 'BDT'
+            });
+        }
+    });
 </script>
 @endsection

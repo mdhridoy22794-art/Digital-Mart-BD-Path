@@ -46,6 +46,7 @@
                             স্বয়ংক্রিয় ট্র্যাককৃত ইভেন্টসমূহ:
                         </span>
                         <span class="px-2 py-0.5 rounded-md bg-white border border-blue-200 text-blue-700 font-mono font-semibold">PageView</span>
+                        <span class="px-2 py-0.5 rounded-md bg-white border border-blue-200 text-blue-700 font-mono font-semibold">ViewContent</span>
                         <span class="px-2 py-0.5 rounded-md bg-white border border-blue-200 text-blue-700 font-mono font-semibold">InitiateCheckout</span>
                         <span class="px-2 py-0.5 rounded-md bg-white border border-blue-200 text-blue-700 font-mono font-semibold">Purchase (With Value & Currency BDT)</span>
                     </div>
@@ -57,8 +58,12 @@
                         <span class="text-[11px] text-slate-400 font-normal">Google Tag Manager, TikTok Pixel, Google Analytics</span>
                     </label>
                     <textarea name="custom_header_script" rows="3" 
-                              placeholder="<!-- Google Analytics, TikTok Pixel ইত্যাদি থাকলে এখানে পেস্ট করতে পারেন -->"
+                              placeholder="<!-- শুধু <script>...</script> ট্যাগযুক্ত কোড পেস্ট করুন (যেমন Google Tag Manager) -->"
                               class="w-full p-4 rounded-2xl bg-slate-50 border border-slate-200/90 text-xs font-mono text-slate-800 placeholder-slate-400 focus:bg-white focus:border-brand-500 focus:ring-4 focus:ring-purple-500/10 outline-none transition">{{ $settings['custom_header_script'] ?? '' }}</textarea>
+                    <p class="text-[11px] text-slate-400 mt-1 font-bn">
+                        <i class="fa-solid fa-circle-info mr-1 text-slate-400"></i>
+                        এখানে কোনো ফেসবুক অ্যাক্সেস টোকেন দেওয়ার প্রয়োজন নেই। সাধারণ টেক্সট দিলে তা কাজ করবে না।
+                    </p>
                 </div>
             </div>
         </div>
