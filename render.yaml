@@ -17,3 +17,5 @@ services:
         value: pgsql
       - key: SESSION_DRIVER
         value: file
+      - key: APP_TIMEZONE
+        value: "Asia/Dhaka"

@@ -228,8 +228,8 @@
 
                             <!-- Date Time -->
                             <td class="py-4 px-6 text-slate-400 font-mono text-[11px] whitespace-nowrap">
-                                <span class="text-slate-800 font-semibold">{{ $order->created_at->format('d M, Y') }}</span><br>
-                                <span>{{ $order->created_at->format('h:i A') }}</span>
+                                <span class="text-slate-800 font-semibold">{{ $order->created_at ? $order->created_at->timezone('Asia/Dhaka')->format('d M, Y') : '—' }}</span><br>
+                                <span>{{ $order->created_at ? $order->created_at->timezone('Asia/Dhaka')->format('h:i A') : '—' }}</span>
                             </td>
 
                             <!-- Action & WhatsApp Support -->

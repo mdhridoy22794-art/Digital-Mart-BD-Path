@@ -298,8 +298,8 @@
 
                         <!-- Date Time -->
                         <td class="py-4 px-6 text-slate-400 font-mono text-[11px] whitespace-nowrap">
-                            {{ $order->created_at->format('d M, Y') }}<br>
-                            <span class="text-slate-500 font-semibold">{{ $order->created_at->format('h:i A') }}</span>
+                            {{ $order->created_at ? $order->created_at->timezone('Asia/Dhaka')->format('d M, Y') : '—' }}<br>
+                            <span class="text-slate-500 font-semibold">{{ $order->created_at ? $order->created_at->timezone('Asia/Dhaka')->format('h:i A') : '—' }}</span>
                         </td>
                     </tr>
                     @empty
