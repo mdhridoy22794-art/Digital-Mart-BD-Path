@@ -297,7 +297,7 @@
         });
     }
 
-    // Fire Facebook Pixel Purchase if loaded
+    // Fire Facebook Pixel Purchase if loaded (with eventID for Meta CAPI deduplication)
     @if(isset($settings['meta_pixel_id']) && !empty($settings['meta_pixel_id']))
     if (typeof fbq === 'function') {
         fbq('track', 'Purchase', {
@@ -305,7 +305,7 @@
             value: {{ (float) $order->amount }},
             currency: 'BDT',
             order_id: "{{ $order->order_number }}"
-        });
+        }, { eventID: "{{ $order->order_number }}" });
     }
     @endif
 

@@ -6,6 +6,7 @@ use App\Models\DigitalLink;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Setting;
+use App\Services\MetaCapiService;
 use App\Services\ZiniPayService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -256,7 +257,7 @@ class ZiniPayController extends Controller
             return $order;
         }
 
-        return DB::transaction(function () use ($order, $gatewayData) {
+        $completedOrder = DB::transaction(function () use ($order, $gatewayData) {
             $freshOrder = Order::where('id', $order->id)->lockForUpdate()->first();
             if ($freshOrder->status === 'completed') {
                 return $freshOrder;
@@ -303,5 +304,10 @@ class ZiniPayController extends Controller
 
             return $freshOrder;
         });
+
+        // Safely trigger Meta Conversions API (CAPI) Purchase Event after DB commit
+        MetaCapiService::sendPurchaseEvent($completedOrder);
+
+        return $completedOrder;
     }
 }
