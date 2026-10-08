@@ -227,6 +227,11 @@ class AdminController extends Controller
             $data['meta_pixel_id'] = implode(', ', $validPids);
         }
 
+        // Meta Access Token: Preserve full alphanumeric token without stripping any characters
+        if (isset($data['meta_access_token'])) {
+            $data['meta_access_token'] = trim((string)$data['meta_access_token']);
+        }
+
         // Sanitize Custom Header Scripts: Prevent raw tokens/strings from leaking into HTML
         if (isset($data['custom_header_script'])) {
             $script = trim((string)$data['custom_header_script']);

@@ -53,6 +53,26 @@
                 </div>
 
                 <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-2 flex flex-col sm:flex-row sm:items-center justify-between gap-1 font-bn">
+                        <span class="flex items-center gap-1.5">
+                            <i class="fa-solid fa-key text-blue-500"></i>
+                            <span>Meta Access Token (ফেসবুক কনভার্সন এপিআই এক্সেস টোকেন)</span>
+                        </span>
+                        <span class="text-[11px] text-emerald-600 font-mono font-semibold">অক্ষর ও সংখ্যা উভয়ই গ্রহণ করে (EAAG...)</span>
+                    </label>
+
+                    <div class="relative">
+                        <input type="text" name="meta_access_token" value="{{ $settings['meta_access_token'] ?? '' }}" 
+                               placeholder="উদাঃ EAAG... (ফেসবুক ইভেন্টস ম্যানেজার থেকে প্রাপ্ত সম্পূর্ণ টোকেনটি এখানে দিন)"
+                               class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200/90 text-xs sm:text-sm font-mono text-slate-800 placeholder-slate-400 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition">
+                    </div>
+                    <p class="text-[11px] text-slate-500 mt-1.5 font-bn">
+                        <i class="fa-solid fa-shield-check text-emerald-500 mr-1"></i>
+                        ফেসবুক Conversions API অ্যাক্সেস টোকেনে সংখ্যা (0-9) ও অক্ষর (A-Z) উভয়ই থাকে। টোকেনটি হুবহু যেভাবে আছে সেভাবে এখানে সেভ থাকবে।
+                    </p>
+                </div>
+
+                <div>
                     <label class="block text-xs font-bold text-slate-700 mb-2 font-bn flex items-center justify-between">
                         <span>কাস্টম স্ক্রিপ্ট কোড (Custom Header Scripts - ঐচ্ছিক)</span>
                         <span class="text-[11px] text-slate-400 font-normal">Google Tag Manager, TikTok Pixel, Google Analytics</span>
@@ -62,7 +82,7 @@
                               class="w-full p-4 rounded-2xl bg-slate-50 border border-slate-200/90 text-xs font-mono text-slate-800 placeholder-slate-400 focus:bg-white focus:border-brand-500 focus:ring-4 focus:ring-purple-500/10 outline-none transition">{{ $settings['custom_header_script'] ?? '' }}</textarea>
                     <p class="text-[11px] text-slate-400 mt-1 font-bn">
                         <i class="fa-solid fa-circle-info mr-1 text-slate-400"></i>
-                        এখানে কোনো ফেসবুক অ্যাক্সেস টোকেন দেওয়ার প্রয়োজন নেই। সাধারণ টেক্সট দিলে তা কাজ করবে না।
+                        এখানে কাস্টম জাভাস্ক্রিপ্ট কোড দিতে পারেন। সাধারণ কোনো টেক্সট দেওয়ার প্রয়োজন নেই।
                     </p>
                 </div>
             </div>
