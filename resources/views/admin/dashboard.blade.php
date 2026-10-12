@@ -247,17 +247,13 @@
 
                         <!-- Payment Method -->
                         <td class="py-4 px-6">
-                            @if(strtolower($order->payment_method) === 'bkash')
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-pink-50 text-pink-700 border border-pink-200">
-                                <span class="w-1.5 h-1.5 rounded-full bg-pink-500"></span>
-                                <span>bKash</span>
+                            @php
+                                $badge = $order->payment_method_badge;
+                            @endphp
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold {{ $badge['bg'] }} {{ $badge['text'] }} border {{ $badge['border'] }}">
+                                <span class="w-1.5 h-1.5 rounded-full {{ $badge['dot'] }}"></span>
+                                <span>{{ $badge['name'] }}</span>
                             </span>
-                            @else
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-orange-50 text-orange-700 border border-orange-200">
-                                <span class="w-1.5 h-1.5 rounded-full bg-orange-500"></span>
-                                <span>Nagad</span>
-                            </span>
-                            @endif
                         </td>
 
                         <!-- TrxID with 1-click Copy -->
@@ -283,17 +279,40 @@
 
                         <!-- Delivered Link with Copy -->
                         <td class="py-4 px-6 max-w-xs">
-                            <div class="flex items-center gap-2">
-                                <a href="{{ $order->delivered_link }}" target="_blank" 
-                                   class="font-mono text-[11px] text-brand-600 hover:underline truncate max-w-[160px] block" 
-                                   title="{{ $order->delivered_link }}">
-                                    {{ $order->delivered_link }}
+                            @php
+                                $deliveredList = array_values(array_filter(preg_split('/\r\n|\r|\n/', (string) $order->delivered_link)));
+                            @endphp
+                            @if(count($deliveredList) > 1)
+                            <div class="space-y-1">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="px-2 py-0.5 rounded-full bg-purple-100 text-brand-700 text-[10px] font-bold font-mono">
+                                        {{ count($deliveredList) }}টি লিংক
+                                    </span>
+                                    <button onclick="copyText('{{ addslashes(implode("\n", $deliveredList)) }}', this)" 
+                                            class="px-2 py-0.5 rounded bg-purple-50 text-brand-600 hover:bg-brand-600 hover:text-white border border-purple-200 text-[10px] font-bold font-mono transition shrink-0"
+                                            title="সব লিংক একসাথে কপি">
+                                        Copy All
+                                    </button>
+                                </div>
+                                <div class="text-[10px] text-slate-500 font-mono truncate max-w-[150px]" title="{{ $deliveredList[0] }}">
+                                    1. {{ $deliveredList[0] }}
+                                </div>
+                            </div>
+                            @elseif(count($deliveredList) === 1)
+                            <div class="flex items-center gap-1.5">
+                                <a href="{{ $deliveredList[0] }}" target="_blank" 
+                                   class="font-mono text-[11px] text-brand-600 hover:underline truncate max-w-[150px] block" 
+                                   title="{{ $deliveredList[0] }}">
+                                    {{ $deliveredList[0] }}
                                 </a>
-                                <button onclick="copyText('{{ $order->delivered_link }}', this)" 
+                                <button onclick="copyText('{{ addslashes($deliveredList[0]) }}', this)" 
                                         class="px-2 py-0.5 rounded bg-purple-50 text-brand-600 hover:bg-brand-600 hover:text-white border border-purple-200 text-[10px] font-bold font-mono transition shrink-0">
                                     Copy
                                 </button>
                             </div>
+                            @else
+                            <span class="text-slate-400 text-xs">—</span>
+                            @endif
                         </td>
 
                         <!-- Date Time -->

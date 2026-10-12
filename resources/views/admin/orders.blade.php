@@ -106,10 +106,17 @@
                                        class="order-checkbox rounded border-slate-300 text-brand-purple focus:ring-purple-500 w-4 h-4 cursor-pointer">
                             </td>
 
-                            <!-- Order Number -->
+                            <!-- Order Number & Status -->
                             <td class="py-4 px-4">
                                 <span class="font-mono font-bold text-slate-900 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200">
                                     #{{ $order->order_number }}
+                                </span>
+                                @php
+                                    $stBadge = $order->status_badge;
+                                @endphp
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold {{ $stBadge['bg'] }} {{ $stBadge['text'] }} border {{ $stBadge['border'] }} mt-1.5 block w-fit">
+                                    <span class="w-1 h-1 rounded-full {{ $stBadge['dot'] }}"></span>
+                                    <span>{{ $stBadge['label'] }}</span>
                                 </span>
                             </td>
 
@@ -136,22 +143,13 @@
 
                             <!-- Payment Method & Sender Phone -->
                             <td class="py-4 px-6">
-                                @if(strtolower($order->payment_method) === 'zinipay')
-                                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-200">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-purple-600"></span>
-                                    <span>⚡ ZiniPay Auto</span>
+                                @php
+                                    $badge = $order->payment_method_badge;
+                                @endphp
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold {{ $badge['bg'] }} {{ $badge['text'] }} border {{ $badge['border'] }}">
+                                    <span class="w-1.5 h-1.5 rounded-full {{ $badge['dot'] }}"></span>
+                                    <span>{{ $badge['name'] }}</span>
                                 </span>
-                                @elseif(strtolower($order->payment_method) === 'bkash')
-                                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-pink-50 text-pink-700 border border-pink-200">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-pink-500"></span>
-                                    <span>bKash Personal</span>
-                                </span>
-                                @else
-                                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-orange-50 text-orange-700 border border-orange-200">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-orange-500"></span>
-                                    <span>Nagad Personal</span>
-                                </span>
-                                @endif
 
                                 @if($order->sender_phone)
                                 <span class="text-slate-400 font-mono text-[10px] block mt-1">

@@ -7,6 +7,15 @@
     <div class="bg-white rounded-3xl border border-slate-200/90 shadow-xl overflow-hidden">
         
         <!-- Header Banner -->
+        @php
+            $isCompleted = strtolower($order->status) === 'completed';
+            $isPending = strtolower($order->status) === 'pending';
+            $isCancelled = strtolower($order->status) === 'cancelled';
+            $isFailed = strtolower($order->status) === 'failed';
+        @endphp
+
+        <!-- Header Banner -->
+        @if($isCompleted)
         <div class="gradient-brand p-6 sm:p-8 text-white text-center relative overflow-hidden">
             <div class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-3xl mx-auto mb-4 shadow-lg border border-white/30 animate-bounce">
                 <i class="fa-solid fa-circle-check text-emerald-300"></i>
@@ -16,6 +25,37 @@
                 আপনার অর্ডারটি সফলভাবে সম্পন্ন হয়েছে। নিচে আপনার কাঙ্ক্ষিত সাবস্ক্রিপশন লিংক প্রদান করা হলো।
             </p>
         </div>
+        @elseif($isPending)
+        <div class="bg-gradient-to-r from-amber-600 to-amber-700 p-6 sm:p-8 text-white text-center relative overflow-hidden">
+            <div class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-3xl mx-auto mb-4 shadow-lg border border-white/30">
+                <i class="fa-solid fa-clock text-amber-200"></i>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold font-bn">পেমেন্ট প্রক্রিয়াধীন (Pending)</h1>
+            <p class="text-xs sm:text-sm text-amber-100 mt-1.5 font-bn">
+                পেমেন্ট গেটওয়ে থেকে কনফার্মেশন প্রক্রিয়াধীন রয়েছে। কনফার্ম হওয়া মাত্রই স্বয়ংক্রিয়ভাবে লিংক প্রদর্শিত হবে।
+            </p>
+        </div>
+        @elseif($isFailed)
+        <div class="bg-gradient-to-r from-rose-600 to-rose-700 p-6 sm:p-8 text-white text-center relative overflow-hidden">
+            <div class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-3xl mx-auto mb-4 shadow-lg border border-white/30">
+                <i class="fa-solid fa-triangle-exclamation text-rose-200"></i>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold font-bn">পেমেন্ট ব্যর্থ (Failed) হয়েছে</h1>
+            <p class="text-xs sm:text-sm text-rose-100 mt-1.5 font-bn">
+                পেমেন্ট সম্পন্ন হয়নি। একাউন্ট থেকে টাকা কেটে থাকলে ZiniPay বা আমাদের সাপোর্টে যোগাযোগ করুন।
+            </p>
+        </div>
+        @else
+        <div class="bg-gradient-to-r from-slate-600 to-slate-700 p-6 sm:p-8 text-white text-center relative overflow-hidden">
+            <div class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-3xl mx-auto mb-4 shadow-lg border border-white/30">
+                <i class="fa-solid fa-ban text-slate-200"></i>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold font-bn">অর্ডার বাতিল (Cancelled)</h1>
+            <p class="text-xs sm:text-sm text-slate-100 mt-1.5 font-bn">
+                এই অর্ডারটি বাতিল করা হয়েছে। নতুন করে অর্ডার করার জন্য শপে ফিরে যান।
+            </p>
+        </div>
+        @endif
 
         <div class="p-6 sm:p-8 space-y-6">
 
@@ -35,7 +75,7 @@
                 </div>
                 <div class="p-2">
                     <span class="text-[11px] text-slate-500 block font-bn">পেমেন্ট মেথড</span>
-                    <strong class="text-xs sm:text-sm font-mono font-bold uppercase text-slate-800">{{ $order->payment_method }}</strong>
+                    <strong class="text-xs sm:text-sm font-mono font-bold text-slate-800">{{ $order->payment_method_name }}</strong>
                 </div>
             </div>
 
@@ -47,6 +87,7 @@
             @endif
 
             <!-- Links Delivery Section -->
+            @if($isCompleted)
             <div class="space-y-4">
                 <div class="flex items-center justify-between pb-1 border-b border-slate-100">
                     <span class="text-sm font-extrabold text-slate-900 font-bn flex items-center gap-2">
@@ -98,6 +139,31 @@
                     </div>
                 @endif
             </div>
+            @elseif($isPending)
+            <div class="p-5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-bn flex items-start gap-3">
+                <i class="fa-solid fa-clock text-base text-amber-600 mt-0.5 shrink-0"></i>
+                <div>
+                    <p class="font-bold text-sm">পেমেন্ট কনফার্মেশন প্রক্রিয়াধীন</p>
+                    <p class="text-xs text-amber-800 mt-1">পেমেন্ট গেটওয়ে থেকে কনফার্মেশন পাওয়া মাত্রই এখানে আপনার ডিজিটাল লিংকটি স্বয়ংক্রিয়ভাবে প্রদর্শিত হবে। সাধারণত ১-২ মিনিটের মধ্যে এটি সম্পন্ন হয়।</p>
+                </div>
+            </div>
+            @elseif($isFailed)
+            <div class="p-5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-900 text-xs font-bn flex items-start gap-3">
+                <i class="fa-solid fa-triangle-exclamation text-base text-rose-600 mt-0.5 shrink-0"></i>
+                <div>
+                    <p class="font-bold text-sm">পেমেন্ট সম্পন্ন হয়নি</p>
+                    <p class="text-xs text-rose-800 mt-1">পেমেন্ট ব্যর্থ হয়েছে। একাউন্ট থেকে টাকা কেটে থাকলে ZiniPay বা আমাদের হোয়াটসঅ্যাপ সাপোর্টে যোগাযোগ করুন।</p>
+                </div>
+            </div>
+            @else
+            <div class="p-5 rounded-2xl bg-slate-100 border border-slate-200 text-slate-800 text-xs font-bn flex items-start gap-3">
+                <i class="fa-solid fa-ban text-base text-slate-500 mt-0.5 shrink-0"></i>
+                <div>
+                    <p class="font-bold text-sm">অর্ডারটি বাতিল (Cancelled)</p>
+                    <p class="text-xs text-slate-600 mt-1">পেমেন্ট সম্পন্ন না হওয়ায় এই অর্ডারটি বাতিল হিসেবে গণ্য হয়েছে। কোনো অনুসন্ধানের জন্য সাপোর্টে যোগাযোগ করুন।</p>
+                </div>
+            </div>
+            @endif
 
             @if(!empty($settings['tutorial_video_url']))
             <!-- Tutorial Video Trigger Button -->

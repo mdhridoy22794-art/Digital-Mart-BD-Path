@@ -47,9 +47,12 @@
                         <span class="text-xs text-slate-400 font-bn">অর্ডার নম্বর:</span>
                         <span class="font-bold font-en text-slate-900 text-sm">#{{ $order->order_number }}</span>
                     </div>
-                    <span class="bg-emerald-100 text-emerald-800 text-[11px] font-bold px-3 py-1 rounded-full font-bn flex items-center gap-1.5">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                        <span>ডেলিভারি সম্পন্ন (Completed)</span>
+                    @php
+                        $stBadge = $order->status_badge;
+                    @endphp
+                    <span class="{{ $stBadge['bg'] }} {{ $stBadge['text'] }} text-[11px] font-bold px-3 py-1 rounded-full font-bn flex items-center gap-1.5 border {{ $stBadge['border'] }}">
+                        <span class="w-1.5 h-1.5 rounded-full {{ $stBadge['dot'] }}"></span>
+                        <span>{{ $stBadge['label'] }}</span>
                     </span>
                 </div>
 
@@ -72,8 +75,9 @@
                     </div>
                 </div>
 
-                <!-- Delivered Links Container -->
-                @if(count($deliveredList) > 0)
+                <!-- Status-Specific Content & Delivered Links -->
+                @if(strtolower($order->status) === 'completed')
+                    @if(count($deliveredList) > 0)
                 <div class="p-4 rounded-2xl bg-slate-900 text-white space-y-3 mt-2 border border-slate-800">
                     <div class="flex items-center justify-between text-xs text-emerald-400 font-semibold">
                         <span class="font-bn flex items-center gap-1.5">
@@ -158,6 +162,47 @@
                         </a>
                     </div>
                 </div>
+                    @else
+                    <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bn flex items-start gap-3 mt-2">
+                        <i class="fa-solid fa-circle-check text-base text-emerald-600 mt-0.5 shrink-0"></i>
+                        <div>
+                            <p class="font-bold text-sm">পেমেন্ট সফলভাবে সম্পন্ন হয়েছে!</p>
+                            <p class="text-[12px] text-emerald-700 mt-1">আপনার ডিজিটাল অ্যাক্টিভেশন লিংকটি প্রসেস করা হচ্ছে। খুব শীঘ্রই এখানে প্রদর্শিত হবে। জরুরি প্রয়োজনে নিচে উল্লেখিত হোয়াটসঅ্যাপে যোগাযোগ করুন।</p>
+                        </div>
+                    </div>
+                    @endif
+                @elseif(strtolower($order->status) === 'pending')
+                    <div class="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-bn flex items-start gap-3 mt-2">
+                        <i class="fa-solid fa-clock text-base text-amber-600 mt-0.5 shrink-0"></i>
+                        <div>
+                            <p class="font-bold text-sm">পেমেন্ট প্রক্রিয়াধীন (Pending) রয়েছে</p>
+                            <p class="text-[12px] text-amber-800 mt-1">পেমেন্ট গেটওয়ে থেকে কনফার্মেশন পাওয়া মাত্রই এখানে আপনার ডিজিটাল লিংকটি স্বয়ংক্রিয়ভাবে প্রদর্শিত হবে। সাধারণত পেমেন্ট করার ১-২ মিনিটের মধ্যে এটি সক্রিয় হয়।</p>
+                        </div>
+                    </div>
+                @elseif(strtolower($order->status) === 'cancelled')
+                    <div class="p-4 rounded-2xl bg-slate-100 border border-slate-200 text-slate-700 text-xs font-bn flex items-start gap-3 mt-2">
+                        <i class="fa-solid fa-ban text-base text-slate-500 mt-0.5 shrink-0"></i>
+                        <div>
+                            <p class="font-bold text-sm">এই অর্ডারটি বাতিল (Cancelled) করা হয়েছে</p>
+                            <p class="text-[12px] text-slate-600 mt-1">গেটওয়েতে পেমেন্ট সম্পন্ন না হওয়ায় বা গ্রাহক নিজে বাতিল করায় এই অর্ডারটি বাতিল হিসেবে গণ্য হয়েছে। কোনো সমস্যা বা অনুসন্ধানের জন্য সাপোর্টে যোগাযোগ করুন।</p>
+                        </div>
+                    </div>
+                @elseif(strtolower($order->status) === 'failed')
+                    <div class="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bn flex items-start gap-3 mt-2">
+                        <i class="fa-solid fa-triangle-exclamation text-base text-rose-600 mt-0.5 shrink-0"></i>
+                        <div>
+                            <p class="font-bold text-sm">পেমেন্ট ব্যর্থ (Failed) হয়েছে</p>
+                            <p class="text-[12px] text-rose-700 mt-1">পেমেন্ট সফল হয়নি। একাউন্ট থেকে টাকা কেটে থাকলে ZiniPay বা আমাদের হোয়াটসঅ্যাপ সাপোর্টে যোগাযোগ করুন অথবা নতুন করে পুনরায় অর্ডার করতে পারেন।</p>
+                        </div>
+                    </div>
+                @else
+                    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-slate-700 text-xs font-bn flex items-start gap-3 mt-2">
+                        <i class="fa-solid fa-circle-info text-base text-slate-500 mt-0.5 shrink-0"></i>
+                        <div>
+                            <p class="font-bold text-sm">অর্ডার স্ট্যাটাস: {{ ucfirst($order->status) }}</p>
+                            <p class="text-[12px] text-slate-600 mt-1">আপনার অর্ডারটি প্রসেসিংয়ে রয়েছে। সহায়তার জন্য হোয়াটসঅ্যাপে যোগাযোগ করতে পারেন।</p>
+                        </div>
+                    </div>
                 @endif
             </div>
             @endforeach

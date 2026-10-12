@@ -142,8 +142,8 @@ class ZiniPayController extends Controller
     {
         Log::info('ZiniPay Callback Query:', $request->all());
 
-        $valId = $request->input('val_id');
-        $invoiceId = $request->input('invoice_id');
+        $valId = $request->input('val_id') ?: $request->input('validation_id') ?: $request->input('valId');
+        $invoiceId = $request->input('invoice_id') ?: $request->input('invoiceId') ?: $request->input('invoice_no');
 
         if (!$valId && !$invoiceId) {
             return redirect()->route('home')->with('error', 'অবৈধ পেমেন্ট রেসপন্স পাওয়া গেছে।');
@@ -176,6 +176,10 @@ class ZiniPayController extends Controller
             $order = Order::where('invoice_id', $verifyResult['invoice_id'])->first();
         }
 
+        if (!$order && $request->filled('order_number')) {
+            $order = Order::where('order_number', $request->input('order_number'))->first();
+        }
+
         if (!$order) {
             Log::error('ZiniPay Callback: Order not found for verified payment', $verifyResult);
             return redirect()->route('home')->with('error', 'আপনার অর্ডারটি সিস্টেমে খুঁজে পাওয়া যায়নি। অনুগ্রহ করে কাস্টমার সাপোর্টে যোগাযোগ করুন।');
@@ -199,8 +203,8 @@ class ZiniPayController extends Controller
     {
         Log::info('ZiniPay Webhook Incoming:', $request->all());
 
-        $valId = $request->input('val_id');
-        $invoiceId = $request->input('invoice_id');
+        $valId = $request->input('val_id') ?: $request->input('validation_id') ?: $request->input('valId');
+        $invoiceId = $request->input('invoice_id') ?: $request->input('invoiceId') ?: $request->input('invoice_no');
 
         if (!$valId && !$invoiceId) {
             return response()->json(['status' => 'ignored', 'message' => 'No identifier provided'], 400);
@@ -220,6 +224,12 @@ class ZiniPayController extends Controller
             }
             if (!$order && $invoiceId) {
                 $order = Order::where('invoice_id', $invoiceId)->first();
+            }
+            if (!$order && !empty($verifyResult['invoice_id'])) {
+                $order = Order::where('invoice_id', $verifyResult['invoice_id'])->first();
+            }
+            if (!$order && $request->filled('order_number')) {
+                $order = Order::where('order_number', $request->input('order_number'))->first();
             }
 
             if ($order) {

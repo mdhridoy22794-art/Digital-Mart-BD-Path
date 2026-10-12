@@ -43,8 +43,6 @@ class DatabaseSeeder extends Seeder
             Setting::firstOrCreate(['key' => $key], ['value' => $value]);
         }
 
-        // Always ensure WhatsApp number is set to active customer service number
-        Setting::updateOrCreate(['key' => 'whatsapp_number'], ['value' => '+880 1934-779775']);
 
         // 3. Products Catalog (Gemini Pro IN STOCK, others OUT OF STOCK as requested)
         $products = [

@@ -46,7 +46,11 @@ class AdminController extends Controller
         $availableLinks = DigitalLink::where('status', 'available')->count();
         $soldLinks = DigitalLink::where('status', 'sold')->count();
 
-        $recentOrders = Order::latest()->take(10)->get();
+        $recentOrders = Order::where('status', 'completed')
+            ->whereNotNull('delivered_link')
+            ->latest()
+            ->take(10)
+            ->get();
 
         return view('admin.dashboard', compact(
             'totalOrders',

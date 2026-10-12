@@ -75,15 +75,19 @@ class ZiniPayService
                 ];
             }
 
-            // Auto-fallback: If domain mismatch encountered, retry with official registered domain
+            // Auto-fallback: If domain mismatch encountered, retry with alternate registered domain
             $errorMsg = $data['message'] ?? '';
             if (stripos($errorMsg, 'Domain mismatch') !== false) {
-                Log::warning('ZiniPay Domain mismatch encountered. Retrying with official brand domain...');
+                $alternateDomain = (str_contains($payload['redirect_url'], 'digitalmartbd.xyz'))
+                    ? 'https://digital-mart-bd.onrender.com'
+                    : 'https://digitalmartbd.xyz';
+
+                Log::warning("ZiniPay Domain mismatch encountered. Retrying with alternate registered domain: {$alternateDomain}...");
                 $fallbackPayload = $payload;
-                $fallbackPayload['redirect_url'] = 'https://digitalmartbd.xyz/payment/zinipay/callback';
-                $fallbackPayload['cancel_url'] = 'https://digitalmartbd.xyz/payment/zinipay/cancel';
+                $fallbackPayload['redirect_url'] = preg_replace('#^https?://[^/]+#', $alternateDomain, (string)$payload['redirect_url']);
+                $fallbackPayload['cancel_url'] = preg_replace('#^https?://[^/]+#', $alternateDomain, (string)$payload['cancel_url']);
                 if (!empty($fallbackPayload['webhook_url'])) {
-                    $fallbackPayload['webhook_url'] = 'https://digitalmartbd.xyz/payment/zinipay/webhook';
+                    $fallbackPayload['webhook_url'] = preg_replace('#^https?://[^/]+#', $alternateDomain, (string)$fallbackPayload['webhook_url']);
                 }
 
                 $fbResponse = Http::withoutVerifying()->withHeaders([
