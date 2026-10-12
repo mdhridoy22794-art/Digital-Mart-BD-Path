@@ -25,18 +25,30 @@ class ZiniPayService
     {
         $url = "{$this->baseUrl}/v1/payment/create";
 
+        $redirectUrl = $params['redirect_url'] ?? route('payment.zinipay.callback');
+        $cancelUrl = $params['cancel_url'] ?? route('payment.zinipay.cancel');
+        $webhookUrl = $params['webhook_url'] ?? route('payment.zinipay.webhook');
+
+        // Always guarantee ZiniPay receives the official registered brand domain
+        $brandDomain = 'https://digitalmartbd.xyz';
+        $redirectUrl = preg_replace('#^https?://[^/]+#', $brandDomain, (string)$redirectUrl);
+        $cancelUrl = preg_replace('#^https?://[^/]+#', $brandDomain, (string)$cancelUrl);
+        if (!empty($webhookUrl)) {
+            $webhookUrl = preg_replace('#^https?://[^/]+#', $brandDomain, (string)$webhookUrl);
+        }
+
         $payload = [
             'amount' => (float) $params['amount'],
             'cus_name' => $params['cus_name'] ?? 'Customer',
             'cus_email' => !empty($params['cus_email']) ? $params['cus_email'] : 'customer@digitalmart.com',
             'cus_phone' => $params['cus_phone'] ?? '',
-            'redirect_url' => $params['redirect_url'] ?? route('payment.zinipay.callback'),
-            'cancel_url' => $params['cancel_url'] ?? route('payment.zinipay.cancel'),
+            'redirect_url' => $redirectUrl,
+            'cancel_url' => $cancelUrl,
             'metadata' => !empty($params['metadata']) ? (object) $params['metadata'] : (object) [],
         ];
 
-        if (!empty($params['webhook_url'])) {
-            $payload['webhook_url'] = $params['webhook_url'];
+        if (!empty($webhookUrl)) {
+            $payload['webhook_url'] = $webhookUrl;
         }
 
         try {
@@ -63,15 +75,15 @@ class ZiniPayService
                 ];
             }
 
-            // Auto-fallback: If domain mismatch (brand registered on old domain or custom domain), retry with alternate registered domain
+            // Auto-fallback: If domain mismatch encountered, retry with official registered domain
             $errorMsg = $data['message'] ?? '';
             if (stripos($errorMsg, 'Domain mismatch') !== false) {
-                Log::warning('ZiniPay Domain mismatch encountered. Retrying with alternate registered domain...');
+                Log::warning('ZiniPay Domain mismatch encountered. Retrying with official brand domain...');
                 $fallbackPayload = $payload;
-                $fallbackPayload['redirect_url'] = 'https://digital-mart-bd.onrender.com/payment/zinipay/callback';
-                $fallbackPayload['cancel_url'] = 'https://digital-mart-bd.onrender.com/payment/zinipay/cancel';
+                $fallbackPayload['redirect_url'] = 'https://digitalmartbd.xyz/payment/zinipay/callback';
+                $fallbackPayload['cancel_url'] = 'https://digitalmartbd.xyz/payment/zinipay/cancel';
                 if (!empty($fallbackPayload['webhook_url'])) {
-                    $fallbackPayload['webhook_url'] = 'https://digital-mart-bd.onrender.com/payment/zinipay/webhook';
+                    $fallbackPayload['webhook_url'] = 'https://digitalmartbd.xyz/payment/zinipay/webhook';
                 }
 
                 $fbResponse = Http::withoutVerifying()->withHeaders([

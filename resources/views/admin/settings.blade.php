@@ -171,7 +171,7 @@
                         ZiniPay Webhook URL (যদি ব্র্যান্ড সেটিংসে দিতে চান):
                     </span>
                     <div class="flex items-center justify-between bg-white px-3 py-2 rounded-xl border border-purple-200 font-mono text-[11px] text-slate-700 select-all">
-                        <span>https://digital-mart-bd.onrender.com/payment/zinipay/webhook</span>
+                        <span>https://digitalmartbd.xyz/payment/zinipay/webhook</span>
                     </div>
                 </div>
             </div>
