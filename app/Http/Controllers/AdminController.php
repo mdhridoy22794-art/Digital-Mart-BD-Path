@@ -7,9 +7,13 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Models\Setting;
 use App\Models\User;
+use App\Services\ZiniPayService;
+use App\Services\MetaCapiService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class AdminController extends Controller
@@ -204,6 +208,172 @@ class AdminController extends Controller
         $count = Order::whereIn('id', $ids)->delete();
 
         return redirect()->route('admin.orders')->with('success', "নির্বাচিত {$count}টি অর্ডার সফলভাবে মুছে ফেলা হয়েছে।");
+    }
+
+    /**
+     * Verify & Confirm single order (via ZiniPay API or Manual)
+     */
+    public function verifyOrder(Request $request, $id, ZiniPayService $ziniPayService)
+    {
+        $order = Order::findOrFail($id);
+
+        if ($order->status === 'completed') {
+            return redirect()->route('admin.orders')->with('info', "অর্ডার #{$order->order_number} ইতিমধ্যে সফল (Completed) রয়েছে।");
+        }
+
+        $actionType = $request->input('action_type', 'zinipay'); // 'zinipay' or 'manual'
+
+        if ($actionType === 'zinipay') {
+            $identifier = $order->val_id ?: $order->invoice_id;
+            $type = $order->val_id ? 'val_id' : 'invoice_id';
+
+            if (!$identifier) {
+                return redirect()->route('admin.orders')->with('error', "এই অর্ডারের কোনো ZiniPay ইনভয়েস বা ভ্যালিডেশন আইডি পাওয়া যায়নি। অনুগ্রহ করে ম্যানুয়াল কনফার্মেশন ব্যবহার করুন।");
+            }
+
+            $verifyResult = $ziniPayService->verifyPayment($identifier, $type);
+
+            if (!$verifyResult['success'] || empty($verifyResult['is_completed'])) {
+                $status = $verifyResult['status'] ?? 'PENDING';
+                return redirect()->route('admin.orders')->with('error', "ZiniPay গেটওয়েতে এই পেমেন্টটি এখনও ভেরিফাই হয়নি (স্ট্যাটাস: {$status})। ZiniPay অ্যাপে সিঙ্ক হওয়া নিশ্চিত করুন অথবা ম্যানুয়াল কনফার্মেশন করুন।");
+            }
+
+            $trxId = $verifyResult['transaction_id'] ?? ('ZINI-' . strtoupper(Str::random(8)));
+            $senderPhone = $verifyResult['sender_number'] ?? null;
+            $payMethod = $verifyResult['payment_method'] ?? 'bKash';
+            $rawResponse = $verifyResult['raw'] ?? [];
+            $confirmNote = 'Verified via ZiniPay API on ' . now()->timezone('Asia/Dhaka')->format('d M, Y h:i A');
+        } else {
+            $trxId = trim((string)$request->input('trx_id')) ?: ('MANUAL-' . strtoupper(Str::random(8)));
+            $payMethod = $request->input('payment_method', 'bKash');
+            $senderPhone = $request->input('sender_phone', $order->customer_phone);
+            $rawResponse = ['confirmed_by_admin' => auth()->user()->email ?? 'admin', 'confirmed_at' => now()->toIso8601String()];
+            $confirmNote = 'Manually confirmed by admin on ' . now()->timezone('Asia/Dhaka')->format('d M, Y h:i A');
+        }
+
+        // Allocate Digital Links in FIFO order
+        $quantity = $order->quantity ?: 1;
+        $availableLinks = DigitalLink::where('product_id', $order->product_id)
+            ->where('status', 'available')
+            ->orderBy('id', 'asc')
+            ->take($quantity)
+            ->get();
+
+        if ($availableLinks->count() < $quantity) {
+            return redirect()->route('admin.orders')->with('error', "স্টকে পর্যাপ্ত ডিজিটাল লিংক নেই! অর্ডার পরিমাণ: {$quantity}টি, কিন্তু স্টকে আছে: {$availableLinks->count()}টি। অনুগ্রহ করে প্রথমে লিংক স্টকে যোগ করুন।");
+        }
+
+        DB::transaction(function () use ($order, $availableLinks, $trxId, $senderPhone, $payMethod, $rawResponse, $confirmNote) {
+            $deliveredUrls = [];
+            foreach ($availableLinks as $link) {
+                $link->update([
+                    'status' => 'sold',
+                    'order_id' => $order->id,
+                    'delivered_to_phone' => $order->customer_phone,
+                    'delivered_at' => now(),
+                ]);
+                $deliveredUrls[] = $link->link_url;
+            }
+
+            $order->update([
+                'status' => 'completed',
+                'trx_id' => $trxId,
+                'sender_phone' => $senderPhone,
+                'payment_method' => $payMethod,
+                'digital_link_id' => $availableLinks->first()->id,
+                'delivered_link' => implode("\n", $deliveredUrls),
+                'admin_notes' => $confirmNote,
+                'payment_gateway_response' => json_encode($rawResponse),
+            ]);
+        });
+
+        try {
+            MetaCapiService::sendPurchaseEvent($order->fresh());
+        } catch (\Throwable $e) {
+            Log::warning('Meta CAPI purchase event failed during admin verify: ' . $e->getMessage());
+        }
+
+        return redirect()->route('admin.orders')->with('success', "অর্ডার #{$order->order_number} সফলভাবে ভেরিফাই ও কনফার্ম করা হয়েছে! TrxID: {$trxId}, ডিজিটাল লিংক স্বয়ংক্রিয়ভাবে বরাদ্দ হয়েছে।");
+    }
+
+    /**
+     * Bulk Sync all pending orders with ZiniPay
+     */
+    public function syncPendingOrders(ZiniPayService $ziniPayService)
+    {
+        $pendingOrders = Order::where('status', 'pending')
+            ->where(function ($q) {
+                $q->whereNotNull('invoice_id')->orWhereNotNull('val_id');
+            })
+            ->latest()
+            ->take(50)
+            ->get();
+
+        $completedCount = 0;
+        $failedCount = 0;
+
+        foreach ($pendingOrders as $order) {
+            $identifier = $order->val_id ?: $order->invoice_id;
+            $type = $order->val_id ? 'val_id' : 'invoice_id';
+
+            if (!$identifier) continue;
+
+            $verifyResult = $ziniPayService->verifyPayment($identifier, $type);
+
+            if ($verifyResult['success'] && !empty($verifyResult['is_completed'])) {
+                $quantity = $order->quantity ?: 1;
+                $availableLinks = DigitalLink::where('product_id', $order->product_id)
+                    ->where('status', 'available')
+                    ->orderBy('id', 'asc')
+                    ->take($quantity)
+                    ->get();
+
+                if ($availableLinks->count() >= $quantity) {
+                    $trxId = $verifyResult['transaction_id'] ?? ('ZINI-' . strtoupper(Str::random(8)));
+                    $senderPhone = $verifyResult['sender_number'] ?? null;
+                    $payMethod = $verifyResult['payment_method'] ?? 'bKash';
+
+                    DB::transaction(function () use ($order, $availableLinks, $trxId, $senderPhone, $payMethod, $verifyResult) {
+                        $deliveredUrls = [];
+                        foreach ($availableLinks as $link) {
+                            $link->update([
+                                'status' => 'sold',
+                                'order_id' => $order->id,
+                                'delivered_to_phone' => $order->customer_phone,
+                                'delivered_at' => now(),
+                            ]);
+                            $deliveredUrls[] = $link->link_url;
+                        }
+
+                        $order->update([
+                            'status' => 'completed',
+                            'trx_id' => $trxId,
+                            'sender_phone' => $senderPhone,
+                            'payment_method' => $payMethod,
+                            'digital_link_id' => $availableLinks->first()->id,
+                            'delivered_link' => implode("\n", $deliveredUrls),
+                            'admin_notes' => 'Auto-synced from ZiniPay on ' . now()->timezone('Asia/Dhaka')->format('d M, Y h:i A'),
+                            'payment_gateway_response' => json_encode($verifyResult['raw'] ?? []),
+                        ]);
+                    });
+
+                    try {
+                        MetaCapiService::sendPurchaseEvent($order->fresh());
+                    } catch (\Throwable $e) {}
+
+                    $completedCount++;
+                } else {
+                    $failedCount++;
+                }
+            }
+        }
+
+        $msg = "ZiniPay সিঙ্ক সম্পন্ন: মোট {$completedCount}টি অর্ডার সফলভাবে ভেরিফাই ও কনফার্ম হয়েছে।";
+        if ($failedCount > 0) {
+            $msg .= " ({$failedCount}টি অর্ডারে পর্যাপ্ত স্টক না থাকায় কমপ্লিট করা যায়নি)";
+        }
+
+        return redirect()->route('admin.orders')->with($completedCount > 0 ? 'success' : 'info', $msg);
     }
 
     public function settings()

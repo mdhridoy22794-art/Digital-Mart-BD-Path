@@ -70,6 +70,14 @@
                         <span id="bulkDeleteBtnText">সিলেক্টেড অর্ডার মুছুন</span>
                     </button>
 
+                    <!-- ZiniPay Bulk Sync Button -->
+                    <button type="button" onclick="submitSyncPending()" 
+                            class="px-3.5 py-2 rounded-xl bg-purple-50 text-brand-purple border border-purple-200 text-xs font-bold hover:bg-brand-purple hover:text-white transition flex items-center gap-1.5 font-bn shadow-sm"
+                            title="ZiniPay ক্লাউড থেকে সকল পেন্ডিং অর্ডার স্বয়ংক্রিয়ভাবে সিঙ্ক করুন">
+                        <i class="fa-solid fa-rotate text-xs"></i>
+                        <span>ZiniPay সিঙ্ক</span>
+                    </button>
+
                     <span class="px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-200 flex items-center gap-1.5 font-bn">
                         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                         <span>রিয়েল-টাইম ক্লাউড সিঙ্ক</span>
@@ -233,6 +241,17 @@
                             <!-- Action & WhatsApp Support -->
                             <td class="py-4 px-6 text-center">
                                 <div class="flex items-center justify-center gap-2">
+                                    @if($order->status !== 'completed')
+                                    <!-- Verify & Confirm Button -->
+                                    <button type="button" 
+                                            onclick="openVerifyModal('{{ $order->id }}', '{{ $order->order_number }}', '{{ addslashes($order->customer_name) }}', '{{ $order->customer_phone }}', '{{ number_format($order->amount, 0) }}', '{{ $order->invoice_id }}', '{{ $order->val_id }}')"
+                                            class="px-2.5 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-[11px] font-bn flex items-center gap-1 shadow-sm transition shrink-0"
+                                            title="পেমেন্ট ভেরিফাই ও কনফার্ম করুন">
+                                        <i class="fa-solid fa-shield-check text-xs"></i>
+                                        <span>ভেরিফাই</span>
+                                    </button>
+                                    @endif
+
                                     @php
                                         $cleanPhone = preg_replace('/[^0-9]/', '', $order->customer_phone);
                                         if (str_starts_with($cleanPhone, '0')) {
@@ -293,6 +312,103 @@
     @method('DELETE')
 </form>
 
+<!-- Hidden Form for ZiniPay Bulk Sync -->
+<form id="syncPendingOrdersForm" action="{{ route('admin.orders.sync-pending') }}" method="POST" class="hidden">
+    @csrf
+</form>
+
+<!-- Verify & Confirm Modal -->
+<div id="verifyOrderModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 space-y-5">
+        
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-xl bg-purple-50 text-brand-purple flex items-center justify-center">
+                    <i class="fa-solid fa-shield-check text-base"></i>
+                </div>
+                <div>
+                    <h4 class="font-extrabold text-sm text-slate-900 font-bn">পেমেন্ট ভেরিফাই ও কনফার্ম</h4>
+                    <span id="modalOrderNumber" class="text-xs font-mono font-bold text-brand-purple">#DM-XXXXXX</span>
+                </div>
+            </div>
+            <button type="button" onclick="closeVerifyModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-400 hover:text-slate-600 flex items-center justify-center">
+                <i class="fa-solid fa-xmark text-xs"></i>
+            </button>
+        </div>
+
+        <!-- Order Summary Card -->
+        <div class="bg-slate-50 rounded-2xl p-3.5 border border-slate-200/80 space-y-1.5 text-xs">
+            <div class="flex justify-between">
+                <span class="text-slate-500 font-bn">কাস্টমার নাম:</span>
+                <span id="modalCustomerName" class="font-bold text-slate-800 font-bn">—</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-slate-500 font-bn">মোবাইল নম্বর:</span>
+                <span id="modalCustomerPhone" class="font-bold text-slate-800 font-mono">—</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-slate-500 font-bn">প্রদেয় টাকা:</span>
+                <span id="modalOrderAmount" class="font-extrabold text-brand-purple font-mono">৳—</span>
+            </div>
+            <div id="modalIdentifierBox" class="pt-1 text-[10px] text-slate-400 font-mono truncate hidden">
+                ID: <span id="modalIdentifierText"></span>
+            </div>
+        </div>
+
+        <!-- Option 1: Auto Verify with ZiniPay -->
+        <form id="zinipayVerifyForm" action="" method="POST" class="space-y-2">
+            @csrf
+            <input type="hidden" name="action_type" value="zinipay">
+            <button type="submit" id="zinipaySubmitBtn"
+                    class="w-full py-3 rounded-2xl gradient-brand text-white font-bold text-xs shadow-md shadow-purple-600/20 hover:opacity-95 transition flex items-center justify-center gap-2 font-bn">
+                <i class="fa-solid fa-bolt text-amber-300"></i>
+                <span>ZiniPay থেকে অটো-ভেরিফাই করুন</span>
+            </button>
+            <p class="text-[10px] text-center text-slate-400 font-bn">
+                ZiniPay চেক করে আসল TrxID আনবে ও অটোমেটিক লিংক বরাদ্দ করবে
+            </p>
+        </form>
+
+        <div class="relative flex items-center justify-center my-2">
+            <div class="border-t border-slate-200 w-full"></div>
+            <span class="bg-white px-3 text-[11px] text-slate-400 font-bn uppercase tracking-wider absolute">অথবা</span>
+        </div>
+
+        <!-- Option 2: Manual Confirm by Admin -->
+        <form id="manualVerifyForm" action="" method="POST" class="space-y-3">
+            @csrf
+            <input type="hidden" name="action_type" value="manual">
+            <div>
+                <label class="block text-xs font-bold text-slate-700 font-bn mb-1">
+                    বিকাশ/নগদ TrxID (ঐচ্ছিক):
+                </label>
+                <input type="text" name="trx_id" placeholder="যেমন: DJE8W2L238 (না থাকলে খালি রাখুন)" 
+                       class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-mono text-slate-800 focus:bg-white focus:border-brand-500 outline-none transition">
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-600 font-bn mb-1">মেথড:</label>
+                    <select name="payment_method" class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bn text-slate-800 outline-none">
+                        <option value="bKash">bKash</option>
+                        <option value="Nagad">Nagad</option>
+                        <option value="Rocket">Rocket</option>
+                        <option value="manual">Manual / Cash</option>
+                    </select>
+                </div>
+                <div class="flex items-end">
+                    <button type="submit" 
+                            class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition flex items-center justify-center gap-1.5 font-bn">
+                        <i class="fa-solid fa-check text-xs"></i>
+                        <span>ম্যানুয়াল কনফার্ম</span>
+                    </button>
+                </div>
+            </div>
+        </form>
+
+    </div>
+</div>
+
 @endsection
 
 @section('scripts')
@@ -334,6 +450,38 @@
             const form = document.getElementById('singleDeleteOrderForm');
             form.action = `/admin/orders/${id}`;
             form.submit();
+        }
+    }
+
+    function openVerifyModal(id, orderNumber, customerName, customerPhone, amount, invoiceId, valId) {
+        document.getElementById('modalOrderNumber').innerText = '#' + orderNumber;
+        document.getElementById('modalCustomerName').innerText = customerName;
+        document.getElementById('modalCustomerPhone').innerText = customerPhone;
+        document.getElementById('modalOrderAmount').innerText = '৳' + amount;
+        
+        const idBox = document.getElementById('modalIdentifierBox');
+        const idText = document.getElementById('modalIdentifierText');
+        const identifier = valId || invoiceId;
+        if (identifier) {
+            idText.innerText = identifier;
+            idBox.classList.remove('hidden');
+        } else {
+            idBox.classList.add('hidden');
+        }
+
+        document.getElementById('zinipayVerifyForm').action = `/admin/orders/${id}/verify`;
+        document.getElementById('manualVerifyForm').action = `/admin/orders/${id}/verify`;
+
+        document.getElementById('verifyOrderModal').classList.remove('hidden');
+    }
+
+    function closeVerifyModal() {
+        document.getElementById('verifyOrderModal').classList.add('hidden');
+    }
+
+    function submitSyncPending() {
+        if (confirm('ZiniPay থেকে সকল পেন্ডিং অর্ডার স্বয়ংক্রিয়ভাবে সিঙ্ক ও ভেরিফাই করতে চান?')) {
+            document.getElementById('syncPendingOrdersForm').submit();
         }
     }
 </script>
