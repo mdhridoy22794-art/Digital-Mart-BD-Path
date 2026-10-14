@@ -411,7 +411,7 @@
 
 @endsection
 
-@section('scripts')
+@push('scripts')
 <script>
     function copyText(text, btn) {
         navigator.clipboard.writeText(text).then(() => {
@@ -485,4 +485,4 @@
         }
     }
 </script>
-@endsection
+@endpush
